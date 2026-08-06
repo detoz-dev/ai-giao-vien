@@ -15,26 +15,20 @@ export default async function handler(req, res) {
     let prompt = '';
 
     if (type === 'latex') {
-        prompt = `Đóng vai trò là một chuyên gia thiết kế tài liệu học thuật và giáo án cao cấp. Hãy phân tích toàn diện tài liệu hoặc tệp tin đính kèm dưới đây để biên soạn thành một báo cáo/hướng dẫn học thuật hoàn chỉnh, chuẩn mực, trình bày dưới định dạng HTML sạch sẽ, tối ưu hóa tuyệt đối cho việc in ấn hoặc xuất bản file PDF.
+        prompt = `Đóng vai trò là một hệ thống chuyển đổi tài liệu kỹ thuật chuyên nghiệp. Hãy phân tích tài liệu đính kèm và cấu trúc lại toàn bộ nội dung thành một mã HTML sạch sẽ, bám sát các quy chuẩn trình bày tài liệu kỹ thuật học thuật (giống như các bản hướng dẫn thực hành, tài liệu đồ án, báo cáo kỹ thuật chuẩn in ấn).
 
-YÊU CẦU TRÌNH BÀY VÀ ĐỊNH DẠNG KHẮT KHE:
-1. Bố cục cấu trúc tài liệu:
-   - Tiêu đề chính lớn, in đậm, trang trọng (thẻ <h1>).
-   - Phần thông tin metadata tổng quan gồm: Tên dự án/tài liệu, Phiên bản, Ngày cập nhật, Mục tiêu chi tiết của tài liệu (trình bày trong khung hoặc bảng gọn gàng).
-   - Hệ thống đề mục phân cấp rõ ràng (sử dụng <h2> cho phần chính, <h3> cho phần phụ, đánh số mục theo chuẩn học thuật như 1, 1.1, 1.2, 2, ...).
-2. Bảng biểu chuyên nghiệp (Table):
-   - Bắt buộc sử dụng các thẻ HTML <table>, <tr>, <th>, <td>.
-   - Bảng phải có đường viền nét mảnh màu xám nhạt (#cbd5e1), khoảng cách đệm (padding) thoáng đãng, màu nền tiêu đề bảng (th) xám nhạt sang trọng (#f1f5f9) để hiển thị thông số, quy trình hoặc danh mục phân công cực kỳ dễ nhìn.
-3. Danh sách và Hộp kiểm tra (Checklist):
-   - Sử dụng danh sách có thứ tự/không thứ tự rõ ràng.
-   - Đối với các phần danh sách kiểm tra công việc, sử dụng ký hiệu ô vuông chuẩn (☐) đầu dòng.
-4. Công thức toán học và ký hiệu:
-   - Trình bày rõ ràng, trực quan, dùng định dạng ký hiệu ký tự toán học chuẩn mực (ví dụ: $y'(t) = ay(t) + b$).
-5. Quy cách kỹ thuật đầu ra:
-   - Tuyệt đối KHÔNG trả về mã LaTeX thô hoặc Markdown thuần ('#', '**').
-   - Chỉ trả về cấu trúc mã nguồn HTML hoàn chỉnh chứa các thẻ nội dung (như <div>, <h2>, <h3>, <p>, <ul>, <table>...) để hệ thống nhúng trực tiếp vào khung xem trước và xuất file PDF.
+QUY TẮC ÁP DỤNG THẺ HTML CỐ ĐỊNH:
+1. Header tài liệu: Đặt một dòng tiêu đề nhỏ trên cùng dạng header (ví dụ: TÊN DỰ ÁN - HƯỚNG DẪN THỰC HIỆN).
+2. Tiêu đề chính (Title): Dùng thẻ <h1> cho tên tài liệu chính, in đậm, viết hoa, căn giữa hoặc trang trọng.
+3. Phần mở đầu (Mục tiêu): Đặt đoạn mô tả mục tiêu vào một khối văn bản rõ ràng.
+4. Đề mục lớn (Sections): Sử dụng thẻ <h2> cho các phần đánh số rõ ràng (Ví dụ: "1 Thông tin cố định phải dùng thống nhất", "2 Công đoạn 1...", v.v.).
+5. Đề mục nhỏ (Subsections): Sử dụng thẻ <h3> cho các mục con (Ví dụ: "1.1 Bốn session chính thức", v.v.).
+6. Bảng biểu (Tables): Bắt buộc dịch toàn bộ dữ liệu dạng bảng thành thẻ <table> chuẩn với các ô <th> và <td> có đường viền đen rõ ràng, padding gọn gàng, không dùng bảng kiểu cách hiện đại màu mè, giống phong cách tài liệu in ấn kỹ thuật truyền thống.
+7. Danh sách (Lists): Sử dụng thẻ <ul>/<li> hoặc danh sách kiểm tra bằng ký hiệu ô vuông (☐) nếu có.
 
-Nội dung văn bản bổ sung hoặc tài liệu: ${input || "Phân tích trực tiếp từ tệp đính kèm"}`;
+TUYỆT ĐỐI KHÔNG dùng các thẻ div định dạng màu mè, không dùng Markdown thuần. Chỉ trả về mã HTML cấu trúc thô bám sát phong cách tài liệu kỹ thuật in ấn.
+
+Nội dung bổ sung hoặc tài liệu: ${input || "Phân tích trực tiếp từ tệp đính kèm"}`;
 
     } else if (type === 'game') {
         let gameTypeDesc = "trò chơi trắc nghiệm kiến thức";
@@ -42,14 +36,14 @@ Nội dung văn bản bổ sung hoặc tài liệu: ${input || "Phân tích tr�
         else if (gameType === 'crossword') gameTypeDesc = "trò chơi giải mã ô chữ (Crossword) trực quan";
         else if (gameType === 'guessing') gameTypeDesc = "trò chơi đoán từ / từ khóa chuyên môn (Word Guessing)";
 
-        let styleDesc = "Phong cách đơn giản, tinh tế, tối ưu cho môi trường học tập trang nhã (tông màu trắng, xám slate chuyên nghiệp, không rườm rà).";
+        let styleDesc = "Phong cách đơn giản, tinh tế, tối ưu cho môi trường học tập trang nhã (tông màu trắng, xám slate chuyên nghiệp).";
         if (gameStyle === 'colorful') {
-            styleDesc = "Phong cách nhiều màu sắc, sôi động, bắt mắt cho học sinh (sử dụng các hiệu ứng gradient rực rỡ từ Tailwind như bg-gradient-to-r from-purple-500 to-pink-500, màu sắc tươi sáng, hiệu ứng bóng nổi bật, hoạt ảnh sinh động).";
+            styleDesc = "Phong cách nhiều màu sắc, sôi động, bắt mắt cho học sinh (sử dụng hiệu ứng gradient rực rỡ từ Tailwind, màu sắc tươi sáng, hiệu ứng bóng nổi bật, hoạt ảnh sinh động).";
         } else if (gameStyle === 'chalkboard') {
-            styleDesc = "Phong cách hoài cổ bảng đen lớp học (tông nền tối xanh đậm/slate-900, chữ viết màu trắng hoặc vàng phấn, viền khung phong cách bảng lớp học chuyên nghiệp).";
+            styleDesc = "Phong cách hoài cổ bảng đen lớp học (tông nền tối xanh đậm/slate-900, chữ viết màu trắng hoặc vàng phấn).";
         }
 
-        prompt = `Đóng vai trò là một lập trình viên Front-end chuyên nghiệp. Hãy viết một file HTML hoàn chỉnh, độc lập (standalone HTML file bao gồm toàn bộ cấu trúc HTML, CSS sử dụng Tailwind CDN, thư viện Canvas Confetti qua CDN, thư viện Google Font 'Inter' và toàn bộ mã nguồn JavaScript tương tác bên trong) để tạo ra một ${gameTypeDesc} phục vụ giảng dạy. 
+        prompt = `Đóng vai trò là một lập trình viên Front-end chuyên nghiệp. Hãy viết một file HTML hoàn chỉnh, độc lập (standalone HTML file bao gồm toàn bộ cấu trúc HTML, CSS sử dụng Tailwind CDN, thư viện Canvas Confetti qua CDN, Google Font 'Inter' và mã nguồn JavaScript tương tác bên trong) để tạo ra một ${gameTypeDesc} phục vụ giảng dạy. 
 Dưới cùng của trò chơi, bắt buộc phải thêm một dòng chữ nhỏ bản quyền: 'Thiết kế bởi DETOZ'.
 
 YÊU CẦU KỸ THUẬT & GIAO DIỆN:
@@ -57,9 +51,9 @@ YÊU CẦU KỸ THUẬT & GIAO DIỆN:
 - Dữ liệu trò chơi: Hãy tự động phân tích sâu nội dung tài liệu đính kèm bên dưới để trích xuất ra các câu hỏi, thuật ngữ hoặc từ khóa chính xác, chất lượng cao liên quan trực tiếp đến chủ đề bài học.
 
 CẤU TRÚC VÀ LOGIC TƯƠNG TÁC CHI TIẾT:
-- Đối với Trắc nghiệm (Quiz): Gồm 3 màn hình (Bắt đầu, Chơi, Kết quả) ẩn hiện bằng JS. Có nút bật/tắt Fullscreen, thanh progress bar thể hiện tiến độ câu hỏi, không hiện điểm số khi đang chơi, có nút "Bỏ qua câu này". Khi trả lời đúng: nút đổi màu xanh lá, bắn pháo hoa bằng Canvas Confetti, tự động chuyển câu sau 1 giây. Khi trả lời sai: nút đổi màu đỏ, kích hoạt hiệu ứng rung lắc (class shake), tự động chuyển câu sau 1 giây. Lưu trữ điểm ngầm.
-- Đối với Lật thẻ (Flashcard): Giao diện hiển thị các thẻ ghi nhớ (mặt trước là thuật ngữ/câu hỏi, mặt sau là định nghĩa/đáp án chi tiết). Người dùng bấm vào thẻ hoặc nút tương tác để thực hiện hiệu ứng lật thẻ 3D mượt mà, có nút chuyển qua thẻ tiếp theo/quay lại, hiển thị tổng số thẻ.
-- Đối với Ô chữ / Đoán từ (Crossword / Guessing): Giao diện bảng ô chữ hoặc ô nhập ký tự đoán từ dựa trên gợi ý (clue) lấy từ tài liệu, có cơ chế kiểm tra đáp án đúng/sai từng từ, tính điểm hoặc báo hoàn thành.
+- Đối với Trắc nghiệm (Quiz): Gồm 3 màn hình (Bắt đầu, Chơi, Kết quả) ẩn hiện bằng JS. Có nút bật/tắt Fullscreen, thanh progress bar thể hiện tiến độ, không hiện điểm số khi đang chơi, có nút "Bỏ qua câu này". Trả lời đúng: nút đổi màu xanh lá, bắn pháo hoa bằng Canvas Confetti, tự động chuyển câu sau 1 giây. Trả lời sai: nút đổi màu đỏ, hiệu ứng rung lắc (class shake), tự động chuyển câu sau 1 giây. Lưu trữ điểm ngầm.
+- Đối với Lật thẻ (Flashcard): Giao diện thẻ ghi nhớ tương tác 3D lật mặt trước/sau, có nút chuyển thẻ tiếp theo/quay lại, hiển thị tổng số thẻ.
+- Đối với Ô chữ / Đoán từ (Crossword / Guessing): Giao diện bảng ô chữ hoặc ô nhập ký tự đoán từ dựa trên gợi ý (clue) từ tài liệu, cơ chế kiểm tra đáp án và tính điểm.
 
 BẮT BUỘC: Phải trả về toàn bộ mã nguồn HTML hợp lệ từ <!DOCTYPE html> cho đến </html> chứa đầy đủ mọi thành phần để người dùng lưu thành file .html độc lập và mở chạy ngoại tuyến ngay lập tức trên mọi trình duyệt.
 
