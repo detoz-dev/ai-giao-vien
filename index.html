@@ -21,10 +21,11 @@
     </script>
     <!-- Import Font chữ học thuật từ Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Thư viện hỗ trợ xuất file PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         .academic-text { font-family: 'Merriweather', serif; }
-        /* Tinh chỉnh thanh cuộn cho đẹp mắt */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -36,9 +37,7 @@
     <!-- Nút Chuyển Đổi Giao Diện (Sáng/Tối) ở góc trên bên phải -->
     <div class="fixed top-4 right-4 z-50">
         <button id="themeToggleBtn" onclick="toggleTheme()" class="p-3 bg-white dark:bg-slate-800 rounded-full shadow-md border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500" title="Chuyển chế độ Sáng/Tối">
-            <!-- Icon Mặt Trăng (Chế độ tối) -->
             <svg id="moonIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-            <!-- Icon Mặt Trời (Chế độ sáng) -->
             <svg id="sunIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
         </button>
     </div>
@@ -77,8 +76,20 @@
         </div>
 
         <div class="mt-10 pt-8 border-t border-slate-200 dark:border-slate-700">
-            <div class="flex justify-between items-end mb-3">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
                 <label class="block font-bold text-slate-800 dark:text-slate-200 text-lg">Bản ghi kết quả xuất ra:</label>
+                
+                <!-- Nút Tải về Word và PDF -->
+                <div id="downloadSection" class="hidden flex items-center gap-2">
+                    <button onclick="downloadWord()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Tải về Word (.doc)
+                    </button>
+                    <button onclick="downloadPDF()" class="bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Tải về PDF
+                    </button>
+                </div>
             </div>
             
             <div id="loading" class="hidden flex items-center gap-3 text-blue-700 dark:text-blue-300 mb-4 font-semibold p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-100 dark:border-blue-800">
@@ -86,13 +97,15 @@
                 Hệ thống đang phân tích dữ liệu chuyên sâu, thầy cô vui lòng chờ trong giây lát...
             </div>
             
-            <textarea id="outputData" rows="12" class="w-full p-5 border border-slate-300 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-900 outline-none font-mono text-sm leading-relaxed text-slate-800 dark:text-slate-200 shadow-inner resize-y transition-colors" readonly placeholder="Kết quả từ AI sẽ được hiển thị tại đây..."></textarea>
+            <!-- Khu vực chứa kết quả có thể xuất PDF chuẩn -->
+            <div id="outputContainer">
+                <textarea id="outputData" rows="12" class="w-full p-5 border border-slate-300 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-900 outline-none font-mono text-sm leading-relaxed text-slate-800 dark:text-slate-200 shadow-inner resize-y transition-colors" readonly placeholder="Kết quả từ AI sẽ được hiển thị tại đây..."></textarea>
+            </div>
         </div>
     </div>
 
     <!-- Nút Liên Hệ Hỗ Trợ Zalo Nổi Bật -->
     <a href="https://zalo.me/0962128979" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 bg-[#0068FF] text-white px-5 py-3.5 rounded-full shadow-lg hover:shadow-2xl hover:bg-blue-700 hover:-translate-y-1 font-bold flex items-center gap-2 z-50 transition-all duration-300 border-2 border-white dark:border-slate-700 group">
-        <!-- Zalo Icon (SVG) -->
         <svg class="w-6 h-6 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
             <path d="M21.037 8.384c-.456-4.048-4.444-6.883-8.895-6.384-3.645.426-6.685 3.42-7.147 7.07-.37 2.923 1.096 5.674 3.513 7.15l-.83 3.037c-.173.633.456 1.177 1.033.9l3.155-1.517c1.37.37 2.846.452 4.267.228 3.647-.565 6.453-3.754 6.453-7.464 0-1.026-.176-2.036-.503-3.02z" />
         </svg>
@@ -105,7 +118,6 @@
         const sunIcon = document.getElementById('sunIcon');
         const moonIcon = document.getElementById('moonIcon');
         
-        // Tự động kiểm tra cài đặt thiết bị hoặc lần truy cập trước
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             htmlDoc.classList.add('dark');
             sunIcon.classList.add('hidden');
@@ -156,16 +168,17 @@
             const btn = document.getElementById('btnSubmit');
             const loading = document.getElementById('loading');
             const output = document.getElementById('outputData');
+            const downloadSection = document.getElementById('downloadSection');
 
             if (!input && !fileDataRaw) {
                 return alert("Vui lòng cung cấp dữ liệu đầu vào (nhập văn bản hoặc tải file)!");
             }
 
-            // Trạng thái Loading
             btn.disabled = true;
             btn.classList.add('opacity-70', 'cursor-not-allowed');
             loading.classList.remove('hidden');
             output.value = '';
+            downloadSection.classList.add('hidden');
 
             try {
                 const response = await fetch('/api/generate', {
@@ -181,7 +194,9 @@
                 
                 const data = await response.json();
                 if (data.error) throw new Error(data.error);
+                
                 output.value = data.text;
+                downloadSection.classList.remove('hidden'); // Hiển thị các nút tải về sau khi có kết quả
             } catch (error) {
                 output.value = "Đã xảy ra lỗi trong quá trình phân tích: " + error.message;
             } finally {
@@ -189,6 +204,62 @@
                 btn.classList.remove('opacity-70', 'cursor-not-allowed');
                 loading.classList.add('hidden');
             }
+        }
+
+        // --- Logic Tải Về File Word (.doc) ---
+        function downloadWord() {
+            const text = document.getElementById('outputData').value;
+            if (!text) return alert("Không có nội dung để tải về!");
+
+            // Định dạng HTML chuẩn để Microsoft Word nhận diện và mở đẹp mắt
+            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Ket Qua AI</title></head><body style='font-family: Arial, sans-serif; line-height: 1.6; font-size: 14pt;'>";
+            const footer = "</body></html>";
+            
+            // Chuyển các dấu xuống dòng thành thẻ <br> để Word hiểu
+            const formattedText = text.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+            const sourceHTML = header + formattedText + footer;
+
+            const blob = new Blob(['\ufeff' + sourceHTML], {
+                type: 'application/msword'
+            });
+            
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Tro-Ly-AI-Giao-Vien.doc';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // --- Logic Tải Về File PDF ---
+        function downloadPDF() {
+            const text = document.getElementById('outputData').value;
+            if (!text) return alert("Không có nội dung để tải về!");
+
+            // Tạo một khối div ẩn chứa nội dung để in ra PDF sạch sẽ
+            const element = document.createElement('div');
+            element.style.padding = '20px';
+            element.style.fontFamily = 'Arial, sans-serif';
+            element.style.fontSize = '12pt';
+            element.style.lineHeight = '1.6';
+            element.style.color = '#333';
+            
+            const titleHTML = '<h2 style="color: #1d4ed8; text-align: center; margin-bottom: 20px;">KẾT QUẢ HỖ TRỢ GIẢNG DẠY - TRỢ LÝ AI</h2><hr style="border: 0; border-top: 1px solid #ccc; margin-bottom: 20px;">';
+            const bodyHTML = '<div style="white-space: pre-wrap;">' + text + '</div>';
+            element.innerHTML = titleHTML + bodyHTML;
+
+            const opt = {
+                margin:       10,
+                filename:     'Tro-Ly-AI-Giao-Vien.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Tiến hành xuất PDF và tải về
+            html2pdf().from(element).set(opt).save();
         }
     </script>
 </body>
