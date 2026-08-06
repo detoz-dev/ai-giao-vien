@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Trợ Lý AI Học Thuật</title>
-    <!-- Tích hợp Tailwind CSS & Cấu hình Dark Mode -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -19,9 +18,7 @@
             }
         }
     </script>
-    <!-- Import Font chữ học thuật từ Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Thư viện hỗ trợ xuất file PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -34,7 +31,6 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300 pb-24">
     
-    <!-- Nút Chuyển Đổi Giao Diện (Sáng/Tối) ở góc trên bên phải -->
     <div class="fixed top-4 right-4 z-50">
         <button id="themeToggleBtn" onclick="toggleTheme()" class="p-3 bg-white dark:bg-slate-800 rounded-full shadow-md border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500" title="Chuyển chế độ Sáng/Tối">
             <svg id="moonIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
@@ -42,7 +38,6 @@
         </button>
     </div>
 
-    <!-- Khung chính của ứng dụng -->
     <div class="max-w-4xl mx-auto bg-white dark:bg-slate-800 p-8 md:p-12 rounded-2xl shadow-xl mt-12 border border-slate-200 dark:border-slate-700 transition-colors duration-300">
         <div class="text-center mb-10">
             <h1 class="text-3xl md:text-4xl font-extrabold text-blue-700 dark:text-blue-400 tracking-tight mb-3">Hệ Thống AI Hỗ Trợ Giảng Dạy</h1>
@@ -53,20 +48,21 @@
             <div>
                 <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300">1. Lựa chọn tác vụ phân tích:</label>
                 <select id="toolType" class="w-full p-4 border border-slate-300 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-700 dark:text-white transition-all font-medium">
-                    <option value="game">🎲 Thiết kế trò chơi sư phạm củng cố kiến thức</option>
-                    <option value="latex">🧮 Chuyển đổi tài liệu word sang Latex để in ấn / làm đề kiểm tra </option>
+                    <option value="latex">🧮 Chuyển đổi tài liệu sang định dạng chuẩn LaTeX</option>
+                    <option value="game">🎲 Thiết kế trò chơi trắc nghiệm sư phạm</option>
                 </select>
             </div>
 
             <div>
                 <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300">2. Nguồn dữ liệu đầu vào:</label>
                 <div class="p-4 border-2 border-dashed border-blue-300 dark:border-blue-700/50 rounded-xl bg-blue-50/50 dark:bg-blue-900/20 mb-4 transition-all hover:border-blue-500">
-                    <label class="block text-sm text-blue-800 dark:text-blue-300 font-medium mb-2">Tải tệp tin (PDF, TXT, Hình ảnh - Tối đa 4MB):</label>
-                    <input type="file" id="fileInput" accept=".pdf,.txt,image/*" class="w-full text-slate-600 dark:text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 dark:file:bg-blue-900/50 dark:file:text-blue-200 dark:hover:file:bg-blue-800 cursor-pointer transition-colors">
+                    <label class="block text-sm text-blue-800 dark:text-blue-300 font-medium mb-2">Tải tệp tin gốc lên (.docx, .pdf, .txt, Hình ảnh - Tối đa 4MB):</label>
+                    <input type="file" id="fileInput" accept=".docx,.pdf,.txt,image/*" class="w-full text-slate-600 dark:text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 dark:file:bg-blue-900/50 dark:file:text-blue-200 dark:hover:file:bg-blue-800 cursor-pointer transition-colors">
+                    <p id="fileStatus" class="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium"></p>
                 </div>
 
-                <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300 text-sm">Hoặc nhập văn bản trực tiếp:</label>
-                <textarea id="inputData" rows="6" class="w-full p-4 border border-slate-300 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 dark:text-white transition-all academic-text placeholder-slate-400 dark:placeholder-slate-500 shadow-sm" placeholder="Nhập nội dung bài giảng, đề kiểm tra vào đây..."></textarea>
+                <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300 text-sm">Ghi chú hoặc bổ sung ý kiến (Không bắt buộc nếu đã tải tệp):</label>
+                <textarea id="inputData" rows="4" class="w-full p-4 border border-slate-300 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 dark:text-white transition-all academic-text placeholder-slate-400 dark:placeholder-slate-500 shadow-sm" placeholder="Nhập thêm yêu cầu cụ thể nếu có..."></textarea>
             </div>
 
             <button onclick="processAI()" id="btnSubmit" class="bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 w-full font-bold text-lg transition-all shadow-md hover:shadow-lg flex justify-center items-center gap-2">
@@ -79,7 +75,6 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
                 <label class="block font-bold text-slate-800 dark:text-slate-200 text-lg">Bản ghi kết quả xuất ra:</label>
                 
-                <!-- Nút Tải về Word và PDF -->
                 <div id="downloadSection" class="hidden flex items-center gap-2">
                     <button onclick="downloadWord()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition-all flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -94,17 +89,15 @@
             
             <div id="loading" class="hidden flex items-center gap-3 text-blue-700 dark:text-blue-300 mb-4 font-semibold p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-100 dark:border-blue-800">
                 <svg class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                Hệ thống đang phân tích dữ liệu chuyên sâu, thầy cô vui lòng chờ trong giây lát...
+                Hệ thống đang gửi tệp gốc lên Gemini Pro phân tích chuyên sâu, thầy cô vui lòng chờ trong giây lát...
             </div>
             
-            <!-- Khu vực chứa kết quả có thể xuất PDF chuẩn -->
             <div id="outputContainer">
                 <textarea id="outputData" rows="12" class="w-full p-5 border border-slate-300 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-900 outline-none font-mono text-sm leading-relaxed text-slate-800 dark:text-slate-200 shadow-inner resize-y transition-colors" readonly placeholder="Kết quả từ AI sẽ được hiển thị tại đây..."></textarea>
             </div>
         </div>
     </div>
 
-    <!-- Nút Liên Hệ Hỗ Trợ Zalo Nổi Bật -->
     <a href="https://zalo.me/0962128979" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 bg-[#0068FF] text-white px-5 py-3.5 rounded-full shadow-lg hover:shadow-2xl hover:bg-blue-700 hover:-translate-y-1 font-bold flex items-center gap-2 z-50 transition-all duration-300 border-2 border-white dark:border-slate-700 group">
         <svg class="w-6 h-6 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
             <path d="M21.037 8.384c-.456-4.048-4.444-6.883-8.895-6.384-3.645.426-6.685 3.42-7.147 7.07-.37 2.923 1.096 5.674 3.513 7.15l-.83 3.037c-.173.633.456 1.177 1.033.9l3.155-1.517c1.37.37 2.846.452 4.267.228 3.647-.565 6.453-3.754 6.453-7.464 0-1.026-.176-2.036-.503-3.02z" />
@@ -113,7 +106,6 @@
     </a>
 
     <script>
-        // --- Logic Chuyển đổi Giao diện Sáng/Tối ---
         const htmlDoc = document.documentElement;
         const sunIcon = document.getElementById('sunIcon');
         const moonIcon = document.getElementById('moonIcon');
@@ -138,26 +130,36 @@
             }
         }
 
-        // --- Logic Xử lý AI ---
         let fileDataRaw = null;
         let fileMimeTypeRaw = null;
 
+        // Xử lý tệp gốc tải lên và chuyển thẳng sang định dạng Base64 để gửi trực tiếp cho Gemini
         document.getElementById('fileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
+            const statusLabel = document.getElementById('fileStatus');
+
             if (!file) {
                 fileDataRaw = null;
                 fileMimeTypeRaw = null;
+                statusLabel.textContent = '';
                 return;
             }
+
             if (file.size > 4 * 1024 * 1024) {
-                alert("File vượt quá 4MB. Thầy cô vui lòng tối ưu lại dung lượng file.");
+                alert("Tệp tin vượt quá dung lượng cho phép (4MB). Vui lòng chọn tệp nhỏ hơn.");
                 this.value = '';
+                statusLabel.textContent = '';
                 return;
             }
+
+            statusLabel.textContent = `Đang tải tệp lên hệ thống: ${file.name}...`;
+
             const reader = new FileReader();
             reader.onload = function(event) {
                 fileDataRaw = event.target.result.split(',')[1];
-                fileMimeTypeRaw = file.type || 'text/plain';
+                // Lấy chính xác loại tệp gốc (bao gồm docx, pdf, txt, ảnh)
+                fileMimeTypeRaw = file.type || (file.name.endsWith('.docx') ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'application/pdf');
+                statusLabel.textContent = `✔ Đã sẵn sàng tệp gốc: ${file.name}`;
             };
             reader.readAsDataURL(file);
         });
@@ -170,8 +172,8 @@
             const output = document.getElementById('outputData');
             const downloadSection = document.getElementById('downloadSection');
 
-            if (!input && !fileDataRaw) {
-                return alert("Vui lòng cung cấp dữ liệu đầu vào (nhập văn bản hoặc tải file)!");
+            if (!fileDataRaw && !input) {
+                return alert("Vui lòng tải lên tệp tài liệu gốc hoặc nhập nội dung trước khi khởi chạy!");
             }
 
             btn.disabled = true;
@@ -196,9 +198,9 @@
                 if (data.error) throw new Error(data.error);
                 
                 output.value = data.text;
-                downloadSection.classList.remove('hidden'); // Hiển thị các nút tải về sau khi có kết quả
+                downloadSection.classList.remove('hidden'); 
             } catch (error) {
-                output.value = "Đã xảy ra lỗi trong quá trình phân tích: " + error.message;
+                output.value = "Đã xảy ra lỗi trong quá trình xử lý: " + error.message;
             } finally {
                 btn.disabled = false;
                 btn.classList.remove('opacity-70', 'cursor-not-allowed');
@@ -206,39 +208,30 @@
             }
         }
 
-        // --- Logic Tải Về File Word (.doc) ---
         function downloadWord() {
             const text = document.getElementById('outputData').value;
-            if (!text) return alert("Không có nội dung để tải về!");
+            if (!text) return alert("Không có nội dung kết quả để tải về!");
 
-            // Định dạng HTML chuẩn để Microsoft Word nhận diện và mở đẹp mắt
             const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Ket Qua AI</title></head><body style='font-family: Arial, sans-serif; line-height: 1.6; font-size: 14pt;'>";
             const footer = "</body></html>";
-            
-            // Chuyển các dấu xuống dòng thành thẻ <br> để Word hiểu
             const formattedText = text.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
             const sourceHTML = header + formattedText + footer;
 
-            const blob = new Blob(['\ufeff' + sourceHTML], {
-                type: 'application/msword'
-            });
-            
+            const blob = new Blob(['\ufeff' + sourceHTML], { type: 'application/msword' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'Tro-Ly-AI-Giao-Vien.doc';
+            a.download = 'Tai-Lieu-LaTeX-Chuan.doc';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
 
-        // --- Logic Tải Về File PDF ---
         function downloadPDF() {
             const text = document.getElementById('outputData').value;
-            if (!text) return alert("Không có nội dung để tải về!");
+            if (!text) return alert("Không có nội dung kết quả để tải về!");
 
-            // Tạo một khối div ẩn chứa nội dung để in ra PDF sạch sẽ
             const element = document.createElement('div');
             element.style.padding = '20px';
             element.style.fontFamily = 'Arial, sans-serif';
@@ -246,19 +239,18 @@
             element.style.lineHeight = '1.6';
             element.style.color = '#333';
             
-            const titleHTML = '<h2 style="color: #1d4ed8; text-align: center; margin-bottom: 20px;">KẾT QUẢ HỖ TRỢ GIẢNG DẠY - TRỢ LÝ AI</h2><hr style="border: 0; border-top: 1px solid #ccc; margin-bottom: 20px;">';
+            const titleHTML = '<h2 style="color: #1d4ed8; text-align: center; margin-bottom: 20px;">KẾT QUẢ XUẤT TÀI LIỆU - TRỢ LÝ AI</h2><hr style="border: 0; border-top: 1px solid #ccc; margin-bottom: 20px;">';
             const bodyHTML = '<div style="white-space: pre-wrap;">' + text + '</div>';
             element.innerHTML = titleHTML + bodyHTML;
 
             const opt = {
                 margin:       10,
-                filename:     'Tro-Ly-AI-Giao-Vien.pdf',
+                filename:     'Tai-Lieu-LaTeX-Chuan.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Tiến hành xuất PDF và tải về
             html2pdf().from(element).set(opt).save();
         }
     </script>
