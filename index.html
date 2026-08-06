@@ -102,7 +102,7 @@
     <div class="max-w-4xl mx-auto bg-white dark:bg-slate-800 p-8 md:p-12 rounded-2xl shadow-xl mt-12 border border-slate-200 dark:border-slate-700 transition-colors duration-300">
         <div class="text-center mb-10">
             <h1 class="text-3xl md:text-4xl font-extrabold text-blue-700 dark:text-blue-400 tracking-tight mb-3">Hệ Thống Trợ Lý AI Học Thuật</h1>
-            <p class="text-slate-500 dark:text-slate-400 font-medium">Hỗ trợ giáo viên soạn thảo báo cáo chuẩn in ấn và thiết kế Game tương tác</p>
+            <p class="text-slate-500 dark:text-slate-400 font-medium">Hỗ trợ giáo viên soạn thảo báo cáo chuẩn in ấn và thiết kế Game tương tác tùy chỉnh</p>
         </div>
         
         <div class="space-y-6">
@@ -114,8 +114,8 @@
                 </select>
             </div>
 
-            <!-- Tùy chọn nâng cao cho Trò chơi -->
-            <div id="gameOptionsContainer" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-100 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-600">
+            <!-- Tùy chọn nâng cao cho Trò chơi (Bổ sung ô chọn số lượng câu hỏi) -->
+            <div id="gameOptionsContainer" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-100 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-600">
                 <div>
                     <label class="block mb-1.5 font-semibold text-sm text-slate-700 dark:text-slate-300">Loại trò chơi:</label>
                     <select id="gameType" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg outline-none bg-white dark:bg-slate-800 dark:text-white text-sm font-medium">
@@ -131,6 +131,15 @@
                         <option value="simple">Đơn giản - Tinh tế (Clean & Minimal)</option>
                         <option value="colorful">Nhiều màu sắc - Sôi động (Vibrant & Colorful)</option>
                         <option value="chalkboard">Hoài cổ bảng đen lớp học (Classroom Chalkboard)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block mb-1.5 font-semibold text-sm text-slate-700 dark:text-slate-300">Số lượng câu hỏi:</label>
+                    <select id="numQuestions" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg outline-none bg-white dark:bg-slate-800 dark:text-white text-sm font-medium">
+                        <option value="5">5 câu / mục</option>
+                        <option value="10" selected>10 câu / mục</option>
+                        <option value="15">15 câu / mục</option>
+                        <option value="20">20 câu / mục</option>
                     </select>
                 </div>
             </div>
@@ -175,7 +184,7 @@
             
             <div id="loading" class="hidden flex items-center gap-3 text-blue-700 dark:text-blue-300 mb-4 font-semibold p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-100 dark:border-blue-800">
                 <svg class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                Hệ thống AI đang phân tích dữ liệu và biên soạn báo cáo chuẩn in ấn, thầy cô vui lòng chờ trong giây lát...
+                Hệ thống AI đang phân tích dữ liệu và biên soạn, thầy cô vui lòng chờ trong giây lát...
             </div>
             
             <div id="outputContainer" class="w-full p-8 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 shadow-inner min-h-[400px] transition-colors overflow-x-auto">
@@ -289,6 +298,7 @@
             const input = document.getElementById('inputData').value;
             const gameType = document.getElementById('gameType').value;
             const gameStyle = document.getElementById('gameStyle').value;
+            const numQuestions = document.getElementById('numQuestions').value;
             const btn = document.getElementById('btnSubmit');
             const loading = document.getElementById('loading');
             const previewBox = document.getElementById('previewContent');
@@ -314,7 +324,7 @@
                 const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type, input, fileData: fileDataRaw, fileMimeType: fileMimeTypeRaw, gameType, gameStyle })
+                    body: JSON.stringify({ type, input, fileData: fileDataRaw, fileMimeType: fileMimeTypeRaw, gameType, gameStyle, numQuestions })
                 });
                 
                 const data = await response.json();
