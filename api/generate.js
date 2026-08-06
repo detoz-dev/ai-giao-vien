@@ -11,21 +11,29 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    const { type, input, fileData, fileMimeType, gameType, gameStyle, numQuestions } = req.body;
+    const { type, input, fileData, fileMimeType, gameType, gameStyle, numQuestions, logoData, logoMimeType } = req.body;
     let prompt = '';
 
+    // Đoạn mã HTML chèn logo nếu có
+    const logoHtmlSnippet = (logoData && logoMimeType) 
+      ? `<div style="text-align: center; margin-bottom: 10px;"><img src="data:${logoMimeType};base64,${logoData}" alt="Logo" style="max-height: 70px; object-fit: contain; display: inline-block;" /></div>` 
+      : '';
+
     if (type === 'latex') {
-        prompt = `Đóng vai trò là hệ thống chuyển đổi tài liệu kỹ thuật chuyên nghiệp. Hãy phân tích tài liệu đính kèm và chỉ trả về DUY NHẤT mã HTML sạch sẽ (bắt đầu bằng thẻ chứa nội dung, tuyệt đối không kèm lời dẫn, không kèm markdown \`\`\`html), bám sát quy chuẩn trình bày tài liệu chuẩn in ấn.
+        prompt = `Đóng vai trò là hệ thống chuyển đổi tài liệu kỹ thuật chuyên nghiệp. Hãy phân tích tài liệu đính kèm và chỉ trả về DUY NHẤT mã HTML sạch sẽ, bám sát quy chuẩn trình bày tài liệu chuẩn in ấn.
+BẮT BUỘC: Nếu có đoạn mã chèn logo sau đây, hãy đặt nó ở vị trí trên cùng của tài liệu: ${logoHtmlSnippet}
 Nội dung bổ sung hoặc tài liệu: ${input || "Phân tích trực tiếp từ tệp đính kèm"}`;
 
     } else if (type === 'differentiation') {
-        prompt = `Đóng vai trò là chuyên gia thiết kế giáo án. Hãy phân tích tài liệu đính kèm và biên soạn **Bộ câu hỏi phân hóa năng lực học sinh** (3 cấp độ: Nhận biết/Thông hiểu, Vận dụng, Vận dụng cao). 
-BẮT BUỘC: Chỉ trả về mã HTML sạch sẽ, tuyệt đối KHÔNG kèm theo lời dẫn văn bản ở đầu, KHÔNG có markdown \`\`\`html ở đầu hay cuối.
+        prompt = `Đóng vai trò là chuyên gia thiết kế giáo án. Hãy phân tích tài liệu đính kèm và biên soạn **Bộ câu hỏi phân hóa năng lực học sinh** (3 cấp độ). 
+BẮT BUỘC: Đặt đoạn mã chèn logo này ở vị trí trên cùng của tài liệu: ${logoHtmlSnippet}
+Chỉ trả về mã HTML sạch sẽ, tuyệt đối không kèm markdown \`\`\`html.
 Nội dung tài liệu đính kèm: ${input || "Phân tích trực tiếp từ tệp đính kèm"}`;
 
     } else if (type === 'homework') {
         prompt = `Đóng vai trò là giáo viên bộ môn. Hãy phân tích tài liệu đính kèm và biên soạn **Phiếu bài tập về nhà & Lời giải chi tiết**.
-BẮT BUỘC: Chỉ trả về mã HTML sạch sẽ, tuyệt đối KHÔNG kèm theo lời dẫn văn bản mở đầu, KHÔNG bao bọc trong khối markdown \`\`\`html.
+BẮT BUỘC: Đặt đoạn mã chèn logo này ở vị trí trên cùng của tài liệu: ${logoHtmlSnippet}
+Chỉ trả về mã HTML sạch sẽ, không kèm markdown \`\`\`html.
 Nội dung tài liệu đính kèm: ${input || "Phân tích trực tiếp từ tệp đính kèm"}`;
 
     } else if (type === 'game') {
@@ -34,7 +42,7 @@ Nội dung tài liệu đính kèm: ${input || "Phân tích trực tiếp từ t
         else if (gameType === 'crossword') gameTypeDesc = "trò chơi giải mã ô chữ (Crossword) trực quan";
         else if (gameType === 'guessing') gameTypeDesc = "trò chơi đoán từ / từ khóa chuyên môn (Word Guessing)";
 
-        let styleDesc = "Phong cách đơn giản, tinh tế (tông màu trắng, xám slate chuyên nghiệp).";
+        let styleDesc = "Phong cách đơn giản, tinh tế.";
         if (gameStyle === 'colorful') styleDesc = "Phong cách nhiều màu sắc, sôi động từ Tailwind.";
         else if (gameStyle === 'chalkboard') styleDesc = "Phong cách bảng đen lớp học.";
 
@@ -43,7 +51,7 @@ Nội dung tài liệu đính kèm: ${input || "Phân tích trực tiếp từ t
         prompt = `Đóng vai trò lập trình viên Front-end. Viết file HTML độc lập hoàn chỉnh tạo ra ${gameTypeDesc} gồm đúng ${totalQ} câu hỏi dựa trên tài liệu đính kèm. 
 Phong cách: ${styleDesc}
 Dòng cuối trang có chữ: 'Thiết kế bởi DETOZ'.
-Chỉ trả về mã HTML hợp lệ từ <!DOCTYPE html> đến </html>, không kèm chữ thừa.`;
+Chỉ trả về mã HTML hợp lệ từ <!DOCTYPE html> đến </html>.`;
     }
 
     const parts = [{ text: prompt }];
@@ -68,17 +76,14 @@ Chỉ trả về mã HTML hợp lệ từ <!DOCTYPE html> đến </html>, không
         textResult = (await result.response).text();
     }
 
-    // --- BỘ LỌC CHUYÊN SÂU: LOẠI BỎ TOÀN BỘ TEXT MỞ ĐẦU VÀ MARKDOWN RÁC ---
     if (type === 'game') {
         const htmlMatch = textResult.match(/<!DOCTYPE html>[\s\S]*<\/html>/i);
         if (htmlMatch) textResult = htmlMatch[0];
     } else {
-        // Nếu AI lỡ chèn markdown ```html ... ```
         const codeBlockMatch = textResult.match(/```(?:html)?\s*([\s\S]*?)```/i);
         if (codeBlockMatch) {
             textResult = codeBlockMatch[1].trim();
         }
-        // Nếu AI chèn text mở đầu dạng "Dưới đây là..." trước thẻ HTML thực tế
         const tagIndex = textResult.indexOf('<');
         if (tagIndex > 0) {
             textResult = textResult.substring(tagIndex);
