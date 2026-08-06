@@ -1,0 +1,6 @@
+{
+  "name": "ai-giao-vien",
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0"
+  }
+}
