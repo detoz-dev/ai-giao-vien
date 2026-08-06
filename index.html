@@ -19,13 +19,22 @@
         }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Thư viện xuất PDF từ HTML trực quan -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- Thư viện đọc file Word .docx trên trình duyệt -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .academic-doc { font-family: 'Merriweather', serif; line-height: 1.8; color: #1e293b; }
+        /* Style chuẩn báo cáo học thuật chuyên nghiệp tối ưu in ấn */
+        .academic-report { font-family: 'Inter', sans-serif; line-height: 1.6; color: #1e293b; }
+        .academic-report h1 { font-size: 1.5rem; font-weight: 800; color: #1e3a8a; margin-bottom: 0.5rem; }
+        .academic-report h2 { font-size: 1.25rem; font-weight: 700; color: #1d4ed8; margin-top: 1.5rem; margin-bottom: 0.75rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.25rem; }
+        .academic-report h3 { font-size: 1.1rem; font-weight: 600; color: #334155; margin-top: 1rem; margin-bottom: 0.5rem; }
+        .academic-report p { margin-bottom: 0.75rem; text-align: justify; }
+        .academic-report table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
+        .academic-report th, .academic-report td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+        .academic-report th { background-color: #f1f5f9; font-weight: 600; color: #0f172a; }
+        .academic-report ul, .academic-report ol { margin-left: 1.5rem; margin-bottom: 0.75rem; }
+        .academic-report li { margin-bottom: 0.35rem; }
+        
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -51,7 +60,7 @@
             <div>
                 <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300">1. Lựa chọn tác vụ:</label>
                 <select id="toolType" onchange="switchToolMode()" class="w-full p-4 border border-slate-300 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-700 dark:text-white transition-all font-medium">
-                    <option value="latex">🧮 Chuyển đổi tài liệu sang dạng Xem trước & Tải PDF chuẩn học thuật</option>
+                    <option value="latex">🧮 Soạn thảo báo cáo tài liệu chuẩn học thuật (Xuất PDF trực tiếp)</option>
                     <option value="game">🎲 Thiết kế Trò chơi trắc nghiệm sư phạm (Tải về file .html)</option>
                 </select>
             </div>
@@ -78,7 +87,6 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
                 <label id="outputLabel" class="block font-bold text-slate-800 dark:text-slate-200 text-lg">Bản xem trước tài liệu:</label>
                 
-                <!-- Nút tải về linh hoạt tùy theo chế độ -->
                 <div id="downloadSection" class="hidden flex items-center gap-2">
                     <button id="btnDownloadPDF" onclick="downloadPDF()" class="hidden bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition-all items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -97,13 +105,12 @@
             
             <div id="loading" class="hidden flex items-center gap-3 text-blue-700 dark:text-blue-300 mb-4 font-semibold p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-100 dark:border-blue-800">
                 <svg class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                Hệ thống AI đang phân tích dữ liệu chuyên sâu, thầy cô vui lòng chờ trong giây lát...
+                Hệ thống AI đang phân tích dữ liệu và biên soạn báo cáo, thầy cô vui lòng chờ trong giây lát...
             </div>
             
-            <!-- Khu vực hiển thị kết quả trực quan (dùng cho PDF hoặc thông báo game) -->
-            <div id="outputContainer" class="w-full p-8 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 shadow-inner min-h-[300px] transition-colors overflow-x-auto">
-                <div id="previewContent" class="academic-text text-slate-700 dark:text-slate-200">
-                    <p class="text-slate-400 italic text-center py-20">Kết quả tài liệu học thuật hoặc trò chơi sẽ được hiển thị tại đây...</p>
+            <div id="outputContainer" class="w-full p-8 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 shadow-inner min-h-[400px] transition-colors overflow-x-auto">
+                <div id="previewContent" class="academic-report text-slate-800 dark:text-slate-100">
+                    <p class="text-slate-400 italic text-center py-20">Kết quả báo cáo tài liệu học thuật hoặc trò chơi sẽ được hiển thị tại đây...</p>
                 </div>
             </div>
         </div>
@@ -143,17 +150,17 @@
 
         let fileDataRaw = null;
         let fileMimeTypeRaw = null;
-        let lastGeneratedGameCode = ""; // Lưu trữ mã nguồn game HTML
+        let lastGeneratedGameCode = "";
 
         function switchToolMode() {
             const toolType = document.getElementById('toolType').value;
             const outputLabel = document.getElementById('outputLabel');
             if (toolType === 'latex') {
-                outputLabel.textContent = "Bản xem trước tài liệu học thuật:";
+                outputLabel.textContent = "Bản xem trước báo cáo học thuật:";
             } else {
                 outputLabel.textContent = "Trạng thái trò chơi trắc nghiệm:";
             }
-            document.getElementById('previewContent').innerHTML = '<p class="text-slate-400 italic text-center py-20">Kết quả tài liệu học thuật hoặc trò chơi sẽ được hiển thị tại đây...</p>';
+            document.getElementById('previewContent').innerHTML = '<p class="text-slate-400 italic text-center py-20">Kết quả báo cáo tài liệu học thuật hoặc trò chơi sẽ được hiển thị tại đây...</p>';
             document.getElementById('downloadSection').classList.add('hidden');
         }
 
@@ -186,7 +193,7 @@
                         inputDataBox.value = result.value; 
                         fileDataRaw = null; 
                         fileMimeTypeRaw = null;
-                        statusLabel.textContent = `✔ Đã trích xuất chữ từ file Word: ${file.name}`;
+                        statusLabel.textContent = `✔ Đã trích xuất văn bản từ file Word: ${file.name}`;
                     } catch (err) {
                         statusLabel.textContent = "Lỗi khi đọc file Word!";
                     }
@@ -240,12 +247,10 @@
                 downloadSection.classList.remove('hidden');
 
                 if (type === 'latex') {
-                    // Hiển thị nội dung trực quan dạng tài liệu học thuật
                     previewBox.innerHTML = data.text;
                     btnDownloadPDF.classList.remove('hidden');
                     btnDownloadPDF.classList.add('flex');
                 } else {
-                    // Lưu trữ mã nguồn game HTML
                     lastGeneratedGameCode = data.text;
                     previewBox.innerHTML = `
                         <div class="text-center py-12">
@@ -253,7 +258,7 @@
                                 <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             </div>
                             <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Trò chơi trắc nghiệm đã được thiết kế thành công!</h3>
-                            <p class="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">Thầy cô có thể bấm nút tải về để nhận file trò chơi dạng .html, mở lên bằng bất kỳ trình duyệt nào hoặc bấm "Chơi thử ngay".</p>
+                            <p class="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">Thầy cô có thể tải về file .html để chạy ngoại tuyến hoặc bấm chơi thử ngay.</p>
                         </div>
                     `;
                     btnDownloadGame.classList.remove('hidden');
@@ -270,14 +275,13 @@
             }
         }
 
-        // Tải tài liệu trực tiếp về file PDF
         function downloadPDF() {
             const element = document.getElementById('previewContent');
             if (!element.innerHTML.trim()) return alert("Không có nội dung tài liệu để tải về!");
 
             const opt = {
                 margin:       10,
-                filename:     'Tai-Lieu-Hoc-Thuat-Chuan.pdf',
+                filename:     'Bao-Cao-Hoc-Thuat-Chuan.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -286,7 +290,6 @@
             html2pdf().from(element).set(opt).save();
         }
 
-        // Tải file trò chơi dưới dạng file .html độc lập
         function downloadGameHTML() {
             if (!lastGeneratedGameCode) return alert("Chưa có mã nguồn trò chơi!");
             const blob = new Blob([lastGeneratedGameCode], { type: 'text/html;charset=utf-8' });
@@ -300,7 +303,6 @@
             URL.revokeObjectURL(url);
         }
 
-        // Mở chơi thử trò chơi ngay trong tab mới
         function previewGame() {
             if (!lastGeneratedGameCode) return alert("Chưa có mã nguồn trò chơi!");
             const win = window.open();
