@@ -11,7 +11,6 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // Nhận thêm tham số numQuestions từ phía giao diện gửi lên
     const { type, input, fileData, fileMimeType, gameType, gameStyle, numQuestions } = req.body;
     let prompt = '';
 
@@ -30,6 +29,35 @@ QUY TẮC ÁP DỤNG THẺ HTML CỐ ĐỊNH:
 TUYỆT ĐỐI KHÔNG dùng các thẻ div định dạng màu mè, không dùng Markdown thuần. Chỉ trả về mã HTML cấu trúc thô bám sát phong cách tài liệu kỹ thuật in ấn.
 
 Nội dung bổ sung hoặc tài liệu: ${input || "Phân tích trực tiếp từ tệp đính kèm"}`;
+
+    } else if (type === 'differentiation') {
+        prompt = `Đóng vai trò là chuyên gia thiết kế chương trình giảng dạy và phát triển năng lực học sinh theo định hướng giáo dục hiện đại. Hãy phân tích kỹ tài liệu đính kèm để biên soạn một **Bộ câu hỏi/bài tập phân hóa năng lực học sinh** hoàn chỉnh, trình bày dưới dạng HTML sạch sẽ, chuẩn in ấn (phong cách Times New Roman truyền thống, lề chuẩn, tiêu đề trang trọng).
+
+BỐ CỤC BẮT BUỘC:
+1. Tiêu đề chính (<h1>): BỘ CÂU HỎI VÀ BÀI TẬP PHÂN HÓA NĂNG LỰC HỌC SINH
+2. Phần mở đầu: Mô tả ngắn gọn mục tiêu phân hóa học sinh theo các cấp độ nhận thức.
+3. PHẦN I: MỨC ĐỘ NHẬN BIẾT & THÔNG HIỂU (Dành cho học sinh trung bình - Các câu hỏi củng cố kiến thức nền tảng, định nghĩa, nhận diện cơ bản).
+4. PHẦN II: MỨC ĐỘ VẬN DỤNG (Dành cho học sinh khá - Các bài tập áp dụng công thức, quy tắc vào giải quyết các bài toán hoặc tình huống cụ thể).
+5. PHẦN III: MỨC ĐỘ VẬN DỤNG CAO / THỬ THÁCH (Dành cho học sinh giỏi - Các câu hỏi tư duy sâu, bài toán phân tích phức tạp, đòi hỏi sáng tạo).
+6. PHẦN IV: ĐÁP ÁN VÀ GỢI Ý ĐÁNH GIÁ CHO TỪNG MỨC ĐỘ.
+
+Yêu cầu định dạng: Sử dụng thẻ HTML chuẩn (<h2>, <h3>, <p>, <ul>, <ol>, <table> nếu cần), tuyệt đối không dùng Markdown thuần hay LaTeX thô.
+
+Nội dung tài liệu đính kèm: ${input || "Phân tích trực tiếp từ tệp đính kèm"}`;
+
+    } else if (type === 'homework') {
+        prompt = `Đóng vai trò là một giáo viên bộ môn giàu kinh nghiệm. Hãy phân tích tài liệu đính kèm để biên soạn một **Phiếu bài tập về nhà chuyên sâu** hoàn chỉnh đi kèm phần lời giải chi tiết, trình bày dưới dạng HTML sạch sẽ, chuẩn in ấn (phong cách Times New Roman truyền thống, lề chuẩn, bố cục trang trọng).
+
+BỐ CỤC BẮT BUỘC:
+1. Tiêu đề chính (<h1>): PHIẾU BÀI TẬP VỀ NHÀ & ÔN TẬP TỰ HỌC
+2. Phần thông tin chung: Môn học, Chủ đề, Thời gian hoàn thành.
+3. PHẦN 1: CÂU HỎI TRẮC NGHIỆM KHÁCH QUAN (Hệ thống các câu hỏi kiểm tra nhanh kiến thức trọng tâm của bài).
+4. PHẦN 2: BÀI TẬP TỰ LUẬN & VẬN DỤNG THỰC TIỄN (Các bài tập rèn luyện kỹ năng giải quyết vấn đề chuyên sâu).
+5. PHẦN 3: ĐÁP ÁN VÀ HƯỚNG DẪN GIẢI CHI TIẾT TỪNG BƯỚC (Trình bày lời giải tường minh, rõ ràng, giải thích vì sao chọn đáp án đó hoặc các bước giải tự luận để học sinh tự đối chiếu và giáo viên dễ dàng chiếu bảng).
+
+Yêu cầu định dạng: Sử dụng thẻ HTML chuẩn (<h2>, <h3>, <p>, <ul>, <ol>, <table>), tuyệt đối không dùng Markdown thuần hay LaTeX thô.
+
+Nội dung tài liệu đính kèm: ${input || "Phân tích trực tiếp từ tệp đính kèm"}`;
 
     } else if (type === 'game') {
         let gameTypeDesc = "trò chơi trắc nghiệm kiến thức";
@@ -85,7 +113,6 @@ Nội dung tài liệu đính kèm để phân tích và tạo dữ liệu trò 
         textResult = (await result.response).text();
     }
 
-    // Bộ lọc tự động trích xuất mã HTML chuẩn xác cho game
     if (type === 'game') {
         const htmlMatch = textResult.match(/<!DOCTYPE html>[\s\S]*<\/html>/i);
         if (htmlMatch) {
