@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Trợ Lý AI Học Thuật</title>
+    <title>Hệ Thống Trợ Lý AI Học Thuật Cho Giáo Viên</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -19,12 +19,13 @@
         }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Thư viện xuất PDF từ HTML trực quan -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- Thư viện đọc tệp Word (.docx) trực tiếp trên trình duyệt -->
+    <!-- Thư viện đọc file Word .docx trên trình duyệt -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .academic-text { font-family: 'Merriweather', serif; }
+        .academic-doc { font-family: 'Merriweather', serif; line-height: 1.8; color: #1e293b; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -42,29 +43,29 @@
 
     <div class="max-w-4xl mx-auto bg-white dark:bg-slate-800 p-8 md:p-12 rounded-2xl shadow-xl mt-12 border border-slate-200 dark:border-slate-700 transition-colors duration-300">
         <div class="text-center mb-10">
-            <h1 class="text-3xl md:text-4xl font-extrabold text-blue-700 dark:text-blue-400 tracking-tight mb-3">Hệ Thống AI Hỗ Trợ Giảng Dạy</h1>
-            <p class="text-slate-500 dark:text-slate-400 font-medium">Tích hợp mô hình ngôn ngữ lớn để tối ưu hóa quy trình sư phạm</p>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-blue-700 dark:text-blue-400 tracking-tight mb-3">Hệ Thống Trợ Lý AI Học Thuật</h1>
+            <p class="text-slate-500 dark:text-slate-400 font-medium">Hỗ trợ giáo viên soạn thảo tài liệu chuẩn PDF và thiết kế Game trắc nghiệm tức thì</p>
         </div>
         
         <div class="space-y-6">
             <div>
-                <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300">1. Lựa chọn tác vụ phân tích:</label>
-                <select id="toolType" class="w-full p-4 border border-slate-300 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-700 dark:text-white transition-all font-medium">
-                    <option value="latex">🧮 Chuyển đổi tài liệu sang định dạng chuẩn LaTeX</option>
-                    <option value="game">🎲 Thiết kế trò chơi trắc nghiệm sư phạm</option>
+                <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300">1. Lựa chọn tác vụ:</label>
+                <select id="toolType" onchange="switchToolMode()" class="w-full p-4 border border-slate-300 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-700 dark:text-white transition-all font-medium">
+                    <option value="latex">🧮 Chuyển đổi tài liệu sang dạng Xem trước & Tải PDF chuẩn học thuật</option>
+                    <option value="game">🎲 Thiết kế Trò chơi trắc nghiệm sư phạm (Tải về file .html)</option>
                 </select>
             </div>
 
             <div>
                 <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300">2. Nguồn dữ liệu đầu vào:</label>
                 <div class="p-4 border-2 border-dashed border-blue-300 dark:border-blue-700/50 rounded-xl bg-blue-50/50 dark:bg-blue-900/20 mb-4 transition-all hover:border-blue-500">
-                    <label class="block text-sm text-blue-800 dark:text-blue-300 font-medium mb-2">Tải tệp tin (.docx, .pdf, .txt, Hình ảnh - Tối đa 4MB):</label>
+                    <label class="block text-sm text-blue-800 dark:text-blue-300 font-medium mb-2">Tải tệp tin tài liệu (.docx, .pdf, .txt, Hình ảnh - Tối đa 4MB):</label>
                     <input type="file" id="fileInput" accept=".docx,.pdf,.txt,image/*" class="w-full text-slate-600 dark:text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 dark:file:bg-blue-900/50 dark:file:text-blue-200 dark:hover:file:bg-blue-800 cursor-pointer transition-colors">
                     <p id="fileStatus" class="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium"></p>
                 </div>
 
-                <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300 text-sm">Nội dung văn bản (Tự động điền khi tải file Word hoặc có thể tự chỉnh sửa trực tiếp):</label>
-                <textarea id="inputData" rows="6" class="w-full p-4 border border-slate-300 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 dark:text-white transition-all academic-text placeholder-slate-400 dark:placeholder-slate-500 shadow-sm" placeholder="Nhập hoặc dán nội dung văn bản vào đây..."></textarea>
+                <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300 text-sm">Ghi chú hoặc bổ sung ý kiến (Không bắt buộc nếu đã tải tệp):</label>
+                <textarea id="inputData" rows="4" class="w-full p-4 border border-slate-300 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 dark:text-white transition-all placeholder-slate-400 dark:placeholder-slate-500 shadow-sm" placeholder="Nhập thêm yêu cầu hoặc chủ đề bài học vào đây..."></textarea>
             </div>
 
             <button onclick="processAI()" id="btnSubmit" class="bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 w-full font-bold text-lg transition-all shadow-md hover:shadow-lg flex justify-center items-center gap-2">
@@ -75,27 +76,35 @@
 
         <div class="mt-10 pt-8 border-t border-slate-200 dark:border-slate-700">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
-                <label class="block font-bold text-slate-800 dark:text-slate-200 text-lg">Bản ghi kết quả xuất ra:</label>
+                <label id="outputLabel" class="block font-bold text-slate-800 dark:text-slate-200 text-lg">Bản xem trước tài liệu:</label>
                 
+                <!-- Nút tải về linh hoạt tùy theo chế độ -->
                 <div id="downloadSection" class="hidden flex items-center gap-2">
-                    <button onclick="downloadWord()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition-all flex items-center gap-1.5">
+                    <button id="btnDownloadPDF" onclick="downloadPDF()" class="hidden bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition-all items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        Tải về Word (.doc)
+                        Tải về file PDF chuẩn
                     </button>
-                    <button onclick="downloadPDF()" class="bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition-all flex items-center gap-1.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        Tải về PDF
+                    <button id="btnDownloadGame" onclick="downloadGameHTML()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition-all items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Tải về file Trò chơi (.html)
+                    </button>
+                    <button id="btnPreviewGame" onclick="previewGame()" class="hidden bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition-all items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Chơi thử ngay
                     </button>
                 </div>
             </div>
             
             <div id="loading" class="hidden flex items-center gap-3 text-blue-700 dark:text-blue-300 mb-4 font-semibold p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-100 dark:border-blue-800">
                 <svg class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                Hệ thống đang xử lý thông minh, thầy cô vui lòng chờ trong giây lát...
+                Hệ thống AI đang phân tích dữ liệu chuyên sâu, thầy cô vui lòng chờ trong giây lát...
             </div>
             
-            <div id="outputContainer">
-                <textarea id="outputData" rows="12" class="w-full p-5 border border-slate-300 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-900 outline-none font-mono text-sm leading-relaxed text-slate-800 dark:text-slate-200 shadow-inner resize-y transition-colors" readonly placeholder="Kết quả từ AI sẽ được hiển thị tại đây..."></textarea>
+            <!-- Khu vực hiển thị kết quả trực quan (dùng cho PDF hoặc thông báo game) -->
+            <div id="outputContainer" class="w-full p-8 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 shadow-inner min-h-[300px] transition-colors overflow-x-auto">
+                <div id="previewContent" class="academic-text text-slate-700 dark:text-slate-200">
+                    <p class="text-slate-400 italic text-center py-20">Kết quả tài liệu học thuật hoặc trò chơi sẽ được hiển thị tại đây...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -134,6 +143,19 @@
 
         let fileDataRaw = null;
         let fileMimeTypeRaw = null;
+        let lastGeneratedGameCode = ""; // Lưu trữ mã nguồn game HTML
+
+        function switchToolMode() {
+            const toolType = document.getElementById('toolType').value;
+            const outputLabel = document.getElementById('outputLabel');
+            if (toolType === 'latex') {
+                outputLabel.textContent = "Bản xem trước tài liệu học thuật:";
+            } else {
+                outputLabel.textContent = "Trạng thái trò chơi trắc nghiệm:";
+            }
+            document.getElementById('previewContent').innerHTML = '<p class="text-slate-400 italic text-center py-20">Kết quả tài liệu học thuật hoặc trò chơi sẽ được hiển thị tại đây...</p>';
+            document.getElementById('downloadSection').classList.add('hidden');
+        }
 
         document.getElementById('fileInput').addEventListener('change', async function(e) {
             const file = e.target.files[0];
@@ -148,7 +170,7 @@
             }
 
             if (file.size > 4 * 1024 * 1024) {
-                alert("Tệp tin vượt quá dung lượng cho phép (4MB). Vui lòng chọn tệp nhỏ hơn.");
+                alert("Tệp tin vượt quá dung lượng cho phép (4MB).");
                 this.value = '';
                 statusLabel.textContent = '';
                 return;
@@ -156,26 +178,21 @@
 
             statusLabel.textContent = `Đang xử lý tệp: ${file.name}...`;
 
-            // Nếu là tệp Word (.docx), trích xuất chữ trực tiếp bằng mammoth.js
             if (file.name.endsWith('.docx')) {
                 const reader = new FileReader();
                 reader.onload = async function(event) {
                     try {
-                        const arrayBuffer = event.target.result;
-                        const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+                        const result = await mammoth.extractRawText({ arrayBuffer: event.target.result });
                         inputDataBox.value = result.value; 
                         fileDataRaw = null; 
                         fileMimeTypeRaw = null;
-                        statusLabel.textContent = `✔ Đã trích xuất thành công văn bản từ tệp Word: ${file.name}`;
+                        statusLabel.textContent = `✔ Đã trích xuất chữ từ file Word: ${file.name}`;
                     } catch (err) {
-                        statusLabel.textContent = "Lỗi khi đọc tệp Word!";
-                        alert("Không thể đọc tệp Word này.");
+                        statusLabel.textContent = "Lỗi khi đọc file Word!";
                     }
                 };
                 reader.readAsArrayBuffer(file);
-            } 
-            // Nếu là PDF, TXT hoặc Hình ảnh thì gửi trực tiếp tệp gốc cho Gemini
-            else {
+            } else {
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     fileDataRaw = event.target.result.split(',')[1];
@@ -191,38 +208,61 @@
             const input = document.getElementById('inputData').value;
             const btn = document.getElementById('btnSubmit');
             const loading = document.getElementById('loading');
-            const output = document.getElementById('outputData');
+            const previewBox = document.getElementById('previewContent');
             const downloadSection = document.getElementById('downloadSection');
+            const btnDownloadPDF = document.getElementById('btnDownloadPDF');
+            const btnDownloadGame = document.getElementById('btnDownloadGame');
+            const btnPreviewGame = document.getElementById('btnPreviewGame');
 
             if (!input && !fileDataRaw) {
-                return alert("Vui lòng tải lên tệp tài liệu hoặc nhập nội dung văn bản trước khi khởi chạy!");
+                return alert("Vui lòng tải tệp tài liệu hoặc nhập nội dung trước khi khởi chạy!");
             }
 
             btn.disabled = true;
             btn.classList.add('opacity-70', 'cursor-not-allowed');
             loading.classList.remove('hidden');
-            output.value = '';
+            previewBox.innerHTML = '';
             downloadSection.classList.add('hidden');
+            btnDownloadPDF.classList.add('hidden');
+            btnDownloadGame.classList.add('hidden');
+            btnPreviewGame.classList.add('hidden');
 
             try {
                 const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        type: type, 
-                        input: input,
-                        fileData: fileDataRaw,
-                        fileMimeType: fileMimeTypeRaw
-                    })
+                    body: JSON.stringify({ type, input, fileData: fileDataRaw, fileMimeType: fileMimeTypeRaw })
                 });
                 
                 const data = await response.json();
                 if (data.error) throw new Error(data.error);
                 
-                output.value = data.text;
-                downloadSection.classList.remove('hidden'); 
+                downloadSection.classList.remove('hidden');
+
+                if (type === 'latex') {
+                    // Hiển thị nội dung trực quan dạng tài liệu học thuật
+                    previewBox.innerHTML = data.text;
+                    btnDownloadPDF.classList.remove('hidden');
+                    btnDownloadPDF.classList.add('flex');
+                } else {
+                    // Lưu trữ mã nguồn game HTML
+                    lastGeneratedGameCode = data.text;
+                    previewBox.innerHTML = `
+                        <div class="text-center py-12">
+                            <div class="inline-flex p-4 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full mb-4">
+                                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Trò chơi trắc nghiệm đã được thiết kế thành công!</h3>
+                            <p class="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">Thầy cô có thể bấm nút tải về để nhận file trò chơi dạng .html, mở lên bằng bất kỳ trình duyệt nào hoặc bấm "Chơi thử ngay".</p>
+                        </div>
+                    `;
+                    btnDownloadGame.classList.remove('hidden');
+                    btnDownloadGame.classList.add('flex');
+                    btnPreviewGame.classList.remove('hidden');
+                    btnPreviewGame.classList.add('flex');
+                }
             } catch (error) {
-                output.value = "Đã xảy ra lỗi trong quá trình xử lý: " + error.message;
+                previewBox.innerHTML = `<p class="text-rose-500 font-semibold p-4">Đã xảy ra lỗi: ${error.message}</p>`;
             } finally {
                 btn.disabled = false;
                 btn.classList.remove('opacity-70', 'cursor-not-allowed');
@@ -230,50 +270,42 @@
             }
         }
 
-        function downloadWord() {
-            const text = document.getElementById('outputData').value;
-            if (!text) return alert("Không có nội dung kết quả để tải về!");
-
-            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Ket Qua AI</title></head><body style='font-family: Arial, sans-serif; line-height: 1.6; font-size: 14pt;'>";
-            const footer = "</body></html>";
-            const formattedText = text.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
-            const sourceHTML = header + formattedText + footer;
-
-            const blob = new Blob(['\ufeff' + sourceHTML], { type: 'application/msword' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Tai-Lieu-LaTeX-Chuan.doc';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
+        // Tải tài liệu trực tiếp về file PDF
         function downloadPDF() {
-            const text = document.getElementById('outputData').value;
-            if (!text) return alert("Không có nội dung kết quả để tải về!");
-
-            const element = document.createElement('div');
-            element.style.padding = '20px';
-            element.style.fontFamily = 'Arial, sans-serif';
-            element.style.fontSize = '12pt';
-            element.style.lineHeight = '1.6';
-            element.style.color = '#333';
-            
-            const titleHTML = '<h2 style="color: #1d4ed8; text-align: center; margin-bottom: 20px;">KẾT QUẢ XUẤT TÀI LIỆU - TRỢ LÝ AI</h2><hr style="border: 0; border-top: 1px solid #ccc; margin-bottom: 20px;">';
-            const bodyHTML = '<div style="white-space: pre-wrap;">' + text + '</div>';
-            element.innerHTML = titleHTML + bodyHTML;
+            const element = document.getElementById('previewContent');
+            if (!element.innerHTML.trim()) return alert("Không có nội dung tài liệu để tải về!");
 
             const opt = {
                 margin:       10,
-                filename:     'Tai-Lieu-LaTeX-Chuan.pdf',
+                filename:     'Tai-Lieu-Hoc-Thuat-Chuan.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             html2pdf().from(element).set(opt).save();
+        }
+
+        // Tải file trò chơi dưới dạng file .html độc lập
+        function downloadGameHTML() {
+            if (!lastGeneratedGameCode) return alert("Chưa có mã nguồn trò chơi!");
+            const blob = new Blob([lastGeneratedGameCode], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Tro-Choi-Trac-Nghiem-Su-Pham.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Mở chơi thử trò chơi ngay trong tab mới
+        function previewGame() {
+            if (!lastGeneratedGameCode) return alert("Chưa có mã nguồn trò chơi!");
+            const win = window.open();
+            win.document.write(lastGeneratedGameCode);
+            win.document.close();
         }
     </script>
 </body>
