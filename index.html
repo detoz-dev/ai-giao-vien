@@ -1,33 +1,155 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="light">
 <head>
     <meta charset="UTF-8">
-    <title>Công Cụ AI Cho Giáo Viên</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Trợ Lý AI Học Thuật</title>
+    <!-- Tích hợp Tailwind CSS & Cấu hình Dark Mode -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Import Font chữ học thuật từ Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .academic-text { font-family: 'Merriweather', serif; }
+        /* Tinh chỉnh thanh cuộn cho đẹp mắt */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+    </style>
 </head>
-<body class="bg-gray-100 p-8 font-sans">
-    <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-        <h1 class="text-3xl font-bold mb-6 text-blue-600 text-center">Trợ Lý AI Cho Giáo Viên</h1>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300 pb-24">
+    
+    <!-- Nút Chuyển Đổi Giao Diện (Sáng/Tối) ở góc trên bên phải -->
+    <div class="fixed top-4 right-4 z-50">
+        <button id="themeToggleBtn" onclick="toggleTheme()" class="p-3 bg-white dark:bg-slate-800 rounded-full shadow-md border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500" title="Chuyển chế độ Sáng/Tối">
+            <!-- Icon Mặt Trăng (Chế độ tối) -->
+            <svg id="moonIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            <!-- Icon Mặt Trời (Chế độ sáng) -->
+            <svg id="sunIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
+    </div>
+
+    <!-- Khung chính của ứng dụng -->
+    <div class="max-w-4xl mx-auto bg-white dark:bg-slate-800 p-8 md:p-12 rounded-2xl shadow-xl mt-12 border border-slate-200 dark:border-slate-700 transition-colors duration-300">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-blue-700 dark:text-blue-400 tracking-tight mb-3">Hệ Thống AI Hỗ Trợ Giảng Dạy</h1>
+            <p class="text-slate-500 dark:text-slate-400 font-medium">Tích hợp mô hình ngôn ngữ lớn để tối ưu hóa quy trình sư phạm</p>
+        </div>
         
-        <label class="block mb-2 font-bold text-gray-700">Chọn chức năng:</label>
-        <select id="toolType" class="w-full p-3 border rounded-lg mb-6 outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="game">🎲 Tạo trò chơi củng cố bài học</option>
-            <option value="latex">🧮 Chuyển đổi Word sang LaTeX</option>
-        </select>
+        <div class="space-y-6">
+            <div>
+                <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300">1. Lựa chọn tác vụ phân tích:</label>
+                <select id="toolType" class="w-full p-4 border border-slate-300 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 dark:bg-slate-700 dark:text-white transition-all font-medium">
+                    <option value="game">🎲 Thiết kế trò chơi sư phạm củng cố kiến thức</option>
+                    <option value="latex">🧮 Chuyển đổi mã hóa tài liệu sang định dạng chuẩn LaTeX</option>
+                </select>
+            </div>
 
-        <label class="block mb-2 font-bold text-gray-700">Nhập nội dung (Bài giảng hoặc Đề kiểm tra):</label>
-        <textarea id="inputData" rows="6" class="w-full p-3 border rounded-lg mb-6 outline-none focus:ring-2 focus:ring-blue-500" placeholder="Thầy cô dán nội dung vào đây..."></textarea>
+            <div>
+                <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300">2. Nguồn dữ liệu đầu vào:</label>
+                <div class="p-4 border-2 border-dashed border-blue-300 dark:border-blue-700/50 rounded-xl bg-blue-50/50 dark:bg-blue-900/20 mb-4 transition-all hover:border-blue-500">
+                    <label class="block text-sm text-blue-800 dark:text-blue-300 font-medium mb-2">Tải tệp tin (PDF, TXT, Hình ảnh - Tối đa 4MB):</label>
+                    <input type="file" id="fileInput" accept=".pdf,.txt,image/*" class="w-full text-slate-600 dark:text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 dark:file:bg-blue-900/50 dark:file:text-blue-200 dark:hover:file:bg-blue-800 cursor-pointer transition-colors">
+                </div>
 
-        <button onclick="processAI()" id="btnSubmit" class="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 w-full font-bold text-lg transition-colors">Bắt đầu xử lý</button>
+                <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300 text-sm">Hoặc nhập văn bản trực tiếp:</label>
+                <textarea id="inputData" rows="6" class="w-full p-4 border border-slate-300 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 dark:text-white transition-all academic-text placeholder-slate-400 dark:placeholder-slate-500 shadow-sm" placeholder="Nhập nội dung bài giảng, đề kiểm tra vào đây..."></textarea>
+            </div>
 
-        <div class="mt-8">
-            <label class="block mb-2 font-bold text-gray-700">Kết quả:</label>
-            <div id="loading" class="hidden text-blue-600 mb-2 font-semibold animate-pulse">Hệ thống đang suy nghĩ, thầy cô vui lòng đợi một chút nhé...</div>
-            <textarea id="outputData" rows="12" class="w-full p-3 border rounded-lg bg-gray-50 outline-none" readonly></textarea>
+            <button onclick="processAI()" id="btnSubmit" class="bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 w-full font-bold text-lg transition-all shadow-md hover:shadow-lg flex justify-center items-center gap-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Khởi chạy tiến trình AI
+            </button>
+        </div>
+
+        <div class="mt-10 pt-8 border-t border-slate-200 dark:border-slate-700">
+            <div class="flex justify-between items-end mb-3">
+                <label class="block font-bold text-slate-800 dark:text-slate-200 text-lg">Bản ghi kết quả xuất ra:</label>
+            </div>
+            
+            <div id="loading" class="hidden flex items-center gap-3 text-blue-700 dark:text-blue-300 mb-4 font-semibold p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-100 dark:border-blue-800">
+                <svg class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                Hệ thống đang phân tích dữ liệu chuyên sâu, thầy cô vui lòng chờ trong giây lát...
+            </div>
+            
+            <textarea id="outputData" rows="12" class="w-full p-5 border border-slate-300 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-900 outline-none font-mono text-sm leading-relaxed text-slate-800 dark:text-slate-200 shadow-inner resize-y transition-colors" readonly placeholder="Kết quả từ AI sẽ được hiển thị tại đây..."></textarea>
         </div>
     </div>
 
+    <!-- Nút Liên Hệ Hỗ Trợ Zalo Nổi Bật -->
+    <a href="https://zalo.me/0962128979" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 bg-[#0068FF] text-white px-5 py-3.5 rounded-full shadow-lg hover:shadow-2xl hover:bg-blue-700 hover:-translate-y-1 font-bold flex items-center gap-2 z-50 transition-all duration-300 border-2 border-white dark:border-slate-700 group">
+        <!-- Zalo Icon (SVG) -->
+        <svg class="w-6 h-6 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21.037 8.384c-.456-4.048-4.444-6.883-8.895-6.384-3.645.426-6.685 3.42-7.147 7.07-.37 2.923 1.096 5.674 3.513 7.15l-.83 3.037c-.173.633.456 1.177 1.033.9l3.155-1.517c1.37.37 2.846.452 4.267.228 3.647-.565 6.453-3.754 6.453-7.464 0-1.026-.176-2.036-.503-3.02z" />
+        </svg>
+        <span class="tracking-wide shadow-sm">Liên hệ hỗ trợ</span>
+    </a>
+
     <script>
+        // --- Logic Chuyển đổi Giao diện Sáng/Tối ---
+        const htmlDoc = document.documentElement;
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+        
+        // Tự động kiểm tra cài đặt thiết bị hoặc lần truy cập trước
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            htmlDoc.classList.add('dark');
+            sunIcon.classList.add('hidden');
+            moonIcon.classList.remove('hidden');
+        }
+
+        function toggleTheme() {
+            if (htmlDoc.classList.contains('dark')) {
+                htmlDoc.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                htmlDoc.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+        }
+
+        // --- Logic Xử lý AI ---
+        let fileDataRaw = null;
+        let fileMimeTypeRaw = null;
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) {
+                fileDataRaw = null;
+                fileMimeTypeRaw = null;
+                return;
+            }
+            if (file.size > 4 * 1024 * 1024) {
+                alert("File vượt quá 4MB. Thầy cô vui lòng tối ưu lại dung lượng file.");
+                this.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                fileDataRaw = event.target.result.split(',')[1];
+                fileMimeTypeRaw = file.type || 'text/plain';
+            };
+            reader.readAsDataURL(file);
+        });
+
         async function processAI() {
             const type = document.getElementById('toolType').value;
             const input = document.getElementById('inputData').value;
@@ -35,10 +157,13 @@
             const loading = document.getElementById('loading');
             const output = document.getElementById('outputData');
 
-            if (!input) return alert("Vui lòng nhập nội dung trước khi xử lý!");
+            if (!input && !fileDataRaw) {
+                return alert("Vui lòng cung cấp dữ liệu đầu vào (nhập văn bản hoặc tải file)!");
+            }
 
+            // Trạng thái Loading
             btn.disabled = true;
-            btn.classList.add('opacity-50');
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
             loading.classList.remove('hidden');
             output.value = '';
 
@@ -46,17 +171,22 @@
                 const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type, input })
+                    body: JSON.stringify({ 
+                        type: type, 
+                        input: input,
+                        fileData: fileDataRaw,
+                        fileMimeType: fileMimeTypeRaw
+                    })
                 });
                 
                 const data = await response.json();
                 if (data.error) throw new Error(data.error);
                 output.value = data.text;
             } catch (error) {
-                output.value = "Có lỗi xảy ra: " + error.message;
+                output.value = "Đã xảy ra lỗi trong quá trình phân tích: " + error.message;
             } finally {
                 btn.disabled = false;
-                btn.classList.remove('opacity-50');
+                btn.classList.remove('opacity-70', 'cursor-not-allowed');
                 loading.classList.add('hidden');
             }
         }
