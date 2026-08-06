@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Trợ Lý AI Học Thuật Cho Giáo Viên</title>
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -18,13 +18,12 @@
             }
         }
     </script>
-    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap)" rel="stylesheet">
-    <script src="[https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js](https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js)"></script>
-    <script src="[https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js](https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js)"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         
-        /* KHUÔN MẪU CHUẨN IN ẤN - ĐẨY SÁT MÉP TRÊN, LOẠI BỎ KHOẢNG TRẮNG */
         .academic-report { 
             font-family: 'Times New Roman', Times, serif; 
             font-size: 13pt; 
@@ -148,11 +147,20 @@
             </div>
 
             <div>
-                <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300">2. Nguồn dữ liệu đầu vào:</label>
+                <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300">2. Nguồn dữ liệu đầu vào & Logo:</label>
+                
+                <!-- Tải lên file tài liệu -->
                 <div class="p-4 border-2 border-dashed border-blue-300 dark:border-blue-700/50 rounded-xl bg-blue-50/50 dark:bg-blue-900/20 mb-4 transition-all hover:border-blue-500">
                     <label class="block text-sm text-blue-800 dark:text-blue-300 font-medium mb-2">Tải tệp tin tài liệu (.docx, .pdf, .txt, Hình ảnh - Tối đa 4MB):</label>
                     <input type="file" id="fileInput" accept=".docx,.pdf,.txt,image/*" class="w-full text-slate-600 dark:text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 dark:file:bg-blue-900/50 dark:file:text-blue-200 dark:hover:file:bg-blue-800 cursor-pointer transition-colors">
                     <p id="fileStatus" class="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium"></p>
+                </div>
+
+                <!-- Tải lên hình ảnh Logo (Mới thêm) -->
+                <div class="p-4 border border-slate-300 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-700/30 mb-4">
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Tải lên Logo trường/trung tâm (Tùy chọn - Hiển thị ở đầu file PDF):</label>
+                    <input type="file" id="logoInput" accept="image/*" class="w-full text-slate-600 dark:text-slate-300 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300 dark:file:bg-slate-600 dark:file:text-slate-200 cursor-pointer transition-colors">
+                    <p id="logoStatus" class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium"></p>
                 </div>
 
                 <label class="block mb-2 font-semibold text-slate-700 dark:text-slate-300 text-sm">Ghi chú hoặc bổ sung ý kiến (Không bắt buộc nếu đã tải tệp):</label>
@@ -186,7 +194,7 @@
             </div>
             
             <div id="loading" class="hidden flex items-center gap-3 text-blue-700 dark:text-blue-300 mb-4 font-semibold p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-100 dark:border-blue-800">
-                <svg class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <svg class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 Hệ thống AI đang phân tích dữ liệu và biên soạn, thầy cô vui lòng chờ trong giây lát...
             </div>
             
@@ -225,6 +233,8 @@
 
         let fileDataRaw = null;
         let fileMimeTypeRaw = null;
+        let logoDataRaw = null;
+        let logoMimeTypeRaw = null;
         let lastGeneratedGameCode = "";
 
         function switchToolMode() {
@@ -262,7 +272,7 @@
             }
 
             if (file.size > 4 * 1024 * 1024) {
-                alert("Tệp tin vượt quá dung lượng cho phép (4MB).");
+                alert("Tệp tin tài liệu vượt quá dung lượng cho phép (4MB).");
                 this.value = '';
                 statusLabel.textContent = '';
                 return;
@@ -293,6 +303,35 @@
                 };
                 reader.readAsDataURL(file);
             }
+        });
+
+        // Xử lý tệp logo tải lên
+        document.getElementById('logoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const logoStatus = document.getElementById('logoStatus');
+
+            if (!file) {
+                logoDataRaw = null;
+                logoMimeTypeRaw = null;
+                logoStatus.textContent = '';
+                return;
+            }
+
+            if (file.size > 2 * 1024 * 1024) {
+                alert("Dung lượng logo quá lớn (Tối đa 2MB).");
+                this.value = '';
+                logoStatus.textContent = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const base64String = event.target.result.split(',');
+                logoDataRaw = base64String[1];
+                logoMimeTypeRaw = file.type || 'image/png';
+                logoStatus.textContent = `✔ Đã đính kèm logo: ${file.name}`;
+            };
+            reader.readAsDataURL(file);
         });
 
         async function processAI() {
@@ -326,7 +365,17 @@
                 const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type, input, fileData: fileDataRaw, fileMimeType: fileMimeTypeRaw, gameType, gameStyle, numQuestions })
+                    body: JSON.stringify({ 
+                        type, 
+                        input, 
+                        fileData: fileDataRaw, 
+                        fileMimeType: fileMimeTypeRaw, 
+                        gameType, 
+                        gameStyle, 
+                        numQuestions,
+                        logoData: logoDataRaw,
+                        logoMimeType: logoMimeTypeRaw
+                    })
                 });
                 
                 const data = await response.json();
@@ -368,7 +417,7 @@
             if (!element.innerHTML.trim()) return alert("Không có nội dung để tải về!");
 
             const opt = {
-                margin:       [5, 10, 5, 10], // Đặt lề trên cực nhỏ để nội dung đẩy lên sát đỉnh trang PDF
+                margin:       [5, 10, 5, 10],
                 filename:     'Tai-Lieu-Su-Pham-Chuan.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
