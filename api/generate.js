@@ -10,7 +10,6 @@ export default async function handler(req, res) {
     if (!apiKey) return res.status(500).json({ error: 'Chưa cấu hình API Key' });
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
     
     const { type, input, fileData, fileMimeType } = req.body;
     let prompt = '';
@@ -62,9 +61,7 @@ Logic JavaScript & Trải nghiệm:
 Hãy phân tích trực tiếp tệp tài liệu đính kèm để tự động tạo ra 10 câu hỏi trắc nghiệm liên quan sát với nội dung tệp nhất. Nội dung bổ sung (nếu có): ${input || "Không có"}`;
     }
 
-    // Đóng gói Prompt và truyền trực tiếp tệp gốc (bao gồm docx, pdf, txt, ảnh) lên Gemini Pro
     const parts = [{ text: prompt }];
-    
     if (fileData && fileMimeType) {
         parts.push({
             inlineData: {
@@ -74,11 +71,26 @@ Hãy phân tích trực tiếp tệp tài liệu đính kèm để tự động 
         });
     }
 
-    const result = await model.generateContent(parts);
-    const response = await result.response;
+    let textResult = "";
+
+    // CƠ CHẾ CHẠY THÔNG MINH: ƯU TIÊN PRO -> HẾT TOKEN HOẶC LỖI THÌ TỰ ĐỘNG CHUYỂN QUA 3.6 FLASH
+    try {
+        const proModel = genAI.getGenerativeModel({ model: 'gemini-3.1-pro-preview' });
+        const result = await proModel.generateContent(parts);
+        const response = await result.response;
+        textResult = response.text();
+    } catch (proError) {
+        console.warn("Chế độ Pro đang bận hoặc hết hạn mức, hệ thống đang tự động chuyển sang 3.6 Flash...", proError);
+        
+        // Phương án dự phòng tự động chuyển sang gemini-3.6-flash
+        const flashModel = genAI.getGenerativeModel({ model: 'gemini-3.6-flash' });
+        const result = await flashModel.generateContent(parts);
+        const response = await result.response;
+        textResult = response.text();
+    }
     
-    res.status(200).json({ text: response.text() });
+    res.status(200).json({ text: textResult });
   } catch (error) {
-    res.status(500).json({ error: 'Hệ thống đang bận hoặc tệp quá lớn. Lỗi chi tiết: ' + error.message });
+    res.status(500).json({ error: 'Hệ thống đang quá tải toàn bộ các trạm xử lý. Lỗi chi tiết: ' + error.message });
   }
 }
