@@ -70,7 +70,7 @@ Nội dung tài liệu đính kèm để phân tích và tạo dữ liệu trò 
         });
     }
 
-    let textResult = "";
+let textResult = "";
 
     try {
         const proModel = genAI.getGenerativeModel({ model: 'gemini-3.1-pro-preview' });
@@ -80,6 +80,20 @@ Nội dung tài liệu đính kèm để phân tích và tạo dữ liệu trò 
         const flashModel = genAI.getGenerativeModel({ model: 'gemini-3.6-flash' });
         const result = await flashModel.generateContent(parts);
         textResult = (await result.response).text();
+    }
+
+    // --- BỘ LỌC TỰ ĐỘNG: TRÍCH XUẤT ĐÚNG MÃ HTML, LOẠI BỎ CHỮ THỪA ---
+    if (type === 'game') {
+        const htmlMatch = textResult.match(/<!DOCTYPE html>[\s\S]*<\/html>/i);
+        if (htmlMatch) {
+            textResult = htmlMatch[0];
+        } else {
+            // Trường hợp mô hình bọc trong ```html ... ```
+            const codeBlockMatch = textResult.match(/```(?:html)?\s*([\s\S]*?)```/i);
+            if (codeBlockMatch) {
+                textResult = codeBlockMatch[1].trim();
+            }
+        }
     }
     
     res.status(200).json({ text: textResult });
