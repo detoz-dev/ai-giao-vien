@@ -11,7 +11,8 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    const { type, input, fileData, fileMimeType, gameType, gameStyle } = req.body;
+    // Nhận thêm tham số numQuestions từ phía giao diện gửi lên
+    const { type, input, fileData, fileMimeType, gameType, gameStyle, numQuestions } = req.body;
     let prompt = '';
 
     if (type === 'latex') {
@@ -43,19 +44,21 @@ Nội dung bổ sung hoặc tài liệu: ${input || "Phân tích trực tiếp t
             styleDesc = "Phong cách hoài cổ bảng đen lớp học (tông nền tối xanh đậm/slate-900, chữ viết màu trắng hoặc vàng phấn).";
         }
 
+        const totalQ = numQuestions || 10;
+
         prompt = `Đóng vai trò là một lập trình viên Front-end chuyên nghiệp. Hãy viết một file HTML hoàn chỉnh, độc lập (standalone HTML file bao gồm toàn bộ cấu trúc HTML, CSS sử dụng Tailwind CDN, thư viện Canvas Confetti qua CDN, Google Font 'Inter' và mã nguồn JavaScript tương tác bên trong) để tạo ra một ${gameTypeDesc} phục vụ giảng dạy. 
 Dưới cùng của trò chơi, bắt buộc phải thêm một dòng chữ nhỏ bản quyền: 'Thiết kế bởi DETOZ'.
 
-YÊU CẦU KỸ THUẬT & GIAO DIỆN:
+YÊU CẦU KỸ THUẬT & CẤU HÌNH BẮT BUỘC:
+- Số lượng phần tử/câu hỏi: Phải tạo ra chính xác **${totalQ}** câu hỏi / thẻ / từ khóa (không nhiều hơn, không ít hơn) dựa trên nội dung phân tích từ tài liệu đính kèm.
 - Phong cách thiết kế giao diện: ${styleDesc}
-- Dữ liệu trò chơi: Hãy tự động phân tích sâu nội dung tài liệu đính kèm bên dưới để trích xuất ra các câu hỏi, thuật ngữ hoặc từ khóa chính xác, chất lượng cao liên quan trực tiếp đến chủ đề bài học.
 
 CẤU TRÚC VÀ LOGIC TƯƠNG TÁC CHI TIẾT:
-- Đối với Trắc nghiệm (Quiz): Gồm 3 màn hình (Bắt đầu, Chơi, Kết quả) ẩn hiện bằng JS. Có nút bật/tắt Fullscreen, thanh progress bar thể hiện tiến độ, không hiện điểm số khi đang chơi, có nút "Bỏ qua câu này". Trả lời đúng: nút đổi màu xanh lá, bắn pháo hoa bằng Canvas Confetti, tự động chuyển câu sau 1 giây. Trả lời sai: nút đổi màu đỏ, hiệu ứng rung lắc (class shake), tự động chuyển câu sau 1 giây. Lưu trữ điểm ngầm.
-- Đối với Lật thẻ (Flashcard): Giao diện thẻ ghi nhớ tương tác 3D lật mặt trước/sau, có nút chuyển thẻ tiếp theo/quay lại, hiển thị tổng số thẻ.
-- Đối với Ô chữ / Đoán từ (Crossword / Guessing): Giao diện bảng ô chữ hoặc ô nhập ký tự đoán từ dựa trên gợi ý (clue) từ tài liệu, cơ chế kiểm tra đáp án và tính điểm.
+- Đối với Trắc nghiệm (Quiz): Gồm 3 màn hình (Bắt đầu, Chơi, Kết quả) ẩn hiện bằng JS, tạo đủ ${totalQ} câu hỏi. Có nút bật/tắt Fullscreen, thanh progress bar thể hiện tiến độ, không hiện điểm số khi đang chơi, có nút "Bỏ qua câu này". Trả lời đúng: nút đổi màu xanh lá, bắn pháo hoa bằng Canvas Confetti, tự động chuyển câu sau 1 giây. Trả lời sai: nút đổi màu đỏ, hiệu ứng rung lắc (class shake), tự động chuyển câu sau 1 giây. Lưu trữ điểm ngầm.
+- Đối với Lật thẻ (Flashcard): Tạo danh sách đủ ${totalQ} thẻ ghi nhớ tương tác 3D lật mặt trước/sau, có nút chuyển thẻ tiếp theo/quay lại, hiển thị tổng số thẻ.
+- Đối với Ô chữ / Đoán từ (Crossword / Guessing): Tạo đủ ${totalQ} thử thách đoán từ/ô chữ dựa trên gợi ý (clue) từ tài liệu, cơ chế kiểm tra đáp án và tính điểm.
 
-BẮT BUỘC: Phải trả về toàn bộ mã nguồn HTML hợp lệ từ <!DOCTYPE html> cho đến </html> chứa đầy đủ mọi thành phần để người dùng lưu thành file .html độc lập và mở chạy ngoại tuyến ngay lập tức trên mọi trình duyệt.
+BẮT BUỘC: Phải trả về toàn bộ mã nguồn HTML hợp lệ từ <!DOCTYPE html> cho đến </html> chứa đầy đủ mọi thành phần để người dùng lưu thành file .html độc lập và mở chạy ngoại tuyến ngay lập tức trên mọi trình duyệt. Không kèm theo văn bản giải thích thừa thãi bên ngoài.
 
 Nội dung tài liệu đính kèm để phân tích và tạo dữ liệu trò chơi: ${input || "Không có văn bản nhập tay, hãy phân tích trực tiếp file đính kèm"}`;
     }
@@ -70,7 +73,7 @@ Nội dung tài liệu đính kèm để phân tích và tạo dữ liệu trò 
         });
     }
 
-let textResult = "";
+    let textResult = "";
 
     try {
         const proModel = genAI.getGenerativeModel({ model: 'gemini-3.1-pro-preview' });
@@ -82,13 +85,12 @@ let textResult = "";
         textResult = (await result.response).text();
     }
 
-    // --- BỘ LỌC TỰ ĐỘNG: TRÍCH XUẤT ĐÚNG MÃ HTML, LOẠI BỎ CHỮ THỪA ---
+    // Bộ lọc tự động trích xuất mã HTML chuẩn xác cho game
     if (type === 'game') {
         const htmlMatch = textResult.match(/<!DOCTYPE html>[\s\S]*<\/html>/i);
         if (htmlMatch) {
             textResult = htmlMatch[0];
         } else {
-            // Trường hợp mô hình bọc trong ```html ... ```
             const codeBlockMatch = textResult.match(/```(?:html)?\s*([\s\S]*?)```/i);
             if (codeBlockMatch) {
                 textResult = codeBlockMatch[1].trim();
