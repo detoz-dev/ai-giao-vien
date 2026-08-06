@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Công Cụ AI Cho Giáo Viên</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8 font-sans">
+    <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl font-bold mb-6 text-blue-600 text-center">Trợ Lý AI Cho Giáo Viên</h1>
+        
+        <label class="block mb-2 font-bold text-gray-700">Chọn chức năng:</label>
+        <select id="toolType" class="w-full p-3 border rounded-lg mb-6 outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="game">🎲 Tạo trò chơi củng cố bài học</option>
+            <option value="latex">🧮 Chuyển đổi Word sang LaTeX</option>
+        </select>
+
+        <label class="block mb-2 font-bold text-gray-700">Nhập nội dung (Bài giảng hoặc Đề kiểm tra):</label>
+        <textarea id="inputData" rows="6" class="w-full p-3 border rounded-lg mb-6 outline-none focus:ring-2 focus:ring-blue-500" placeholder="Thầy cô dán nội dung vào đây..."></textarea>
+
+        <button onclick="processAI()" id="btnSubmit" class="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 w-full font-bold text-lg transition-colors">Bắt đầu xử lý</button>
+
+        <div class="mt-8">
+            <label class="block mb-2 font-bold text-gray-700">Kết quả:</label>
+            <div id="loading" class="hidden text-blue-600 mb-2 font-semibold animate-pulse">Hệ thống đang suy nghĩ, thầy cô vui lòng đợi một chút nhé...</div>
+            <textarea id="outputData" rows="12" class="w-full p-3 border rounded-lg bg-gray-50 outline-none" readonly></textarea>
+        </div>
+    </div>
+
+    <script>
+        async function processAI() {
+            const type = document.getElementById('toolType').value;
+            const input = document.getElementById('inputData').value;
+            const btn = document.getElementById('btnSubmit');
+            const loading = document.getElementById('loading');
+            const output = document.getElementById('outputData');
+
+            if (!input) return alert("Vui lòng nhập nội dung trước khi xử lý!");
+
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            loading.classList.remove('hidden');
+            output.value = '';
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type, input })
+                });
+                
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+                output.value = data.text;
+            } catch (error) {
+                output.value = "Có lỗi xảy ra: " + error.message;
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                loading.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
