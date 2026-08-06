@@ -11,46 +11,59 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    const { type, input, fileData, fileMimeType } = req.body;
+    const { type, input, fileData, fileMimeType, gameType, gameStyle } = req.body;
     let prompt = '';
 
     if (type === 'latex') {
-        prompt = `Đóng vai là một chuyên gia thiết kế tài liệu học thuật và giáo án cao cấp. Hãy phân tích tài liệu/tệp tin đính kèm dưới đây và biên soạn thành một báo cáo/hướng dẫn học thuật hoàn chỉnh trình bày dưới dạng mã HTML sạch sẽ.
+        prompt = `Đóng vai trò là một chuyên gia thiết kế tài liệu học thuật và giáo án cao cấp. Hãy phân tích toàn diện tài liệu hoặc tệp tin đính kèm dưới đây để biên soạn thành một báo cáo/hướng dẫn học thuật hoàn chỉnh, chuẩn mực, trình bày dưới định dạng HTML sạch sẽ, tối ưu hóa tuyệt đối cho việc in ấn hoặc xuất bản file PDF.
 
-Yêu cầu định dạng và phong cách trình bày (giống hệt các tài liệu hướng dẫn kỹ thuật chuyên nghiệp, dễ nhìn, tối ưu cho in ấn):
-- Bố cục gồm: Tiêu đề lớn in đậm, phần thông tin Meta (Phiên bản, Ngày cập nhật, Mục tiêu tài liệu), các phần nội dung đánh số rõ ràng (1, 1.1, 2, ...).
-- Bảng biểu (Table): Phải sử dụng thẻ HTML <table>, <tr>, <th>, <td> với đường viền gọn gàng, padding thoáng đãng để trình bày các danh mục, thông số hoặc bảng điểm.
-- Danh sách & Checklist: Sử dụng các gạch đầu dòng rõ ràng hoặc ký hiệu ô vuông (☐) cho các phần danh sách cần kiểm tra.
-- Công thức toán học (nếu có): Trình bày rõ ràng, dễ đọc.
-- Tuyệt đối không trả về mã LaTeX thô hay Markdown thuần. Hãy trả về toàn bộ cấu trúc các thẻ HTML nội dung (như <div>, <h2>, <h3>, <p>, <ul>, <table>...) để hệ thống hiển thị trực quan và xuất file PDF chuẩn xác.
+YÊU CẦU TRÌNH BÀY VÀ ĐỊNH DẠNG KHẮT KHE:
+1. Bố cục cấu trúc tài liệu:
+   - Tiêu đề chính lớn, in đậm, trang trọng (thẻ <h1>).
+   - Phần thông tin metadata tổng quan gồm: Tên dự án/tài liệu, Phiên bản, Ngày cập nhật, Mục tiêu chi tiết của tài liệu (trình bày trong khung hoặc bảng gọn gàng).
+   - Hệ thống đề mục phân cấp rõ ràng (sử dụng <h2> cho phần chính, <h3> cho phần phụ, đánh số mục theo chuẩn học thuật như 1, 1.1, 1.2, 2, ...).
+2. Bảng biểu chuyên nghiệp (Table):
+   - Bắt buộc sử dụng các thẻ HTML <table>, <tr>, <th>, <td>.
+   - Bảng phải có đường viền nét mảnh màu xám nhạt (#cbd5e1), khoảng cách đệm (padding) thoáng đãng, màu nền tiêu đề bảng (th) xám nhạt sang trọng (#f1f5f9) để hiển thị thông số, quy trình hoặc danh mục phân công cực kỳ dễ nhìn.
+3. Danh sách và Hộp kiểm tra (Checklist):
+   - Sử dụng danh sách có thứ tự/không thứ tự rõ ràng.
+   - Đối với các phần danh sách kiểm tra công việc, sử dụng ký hiệu ô vuông chuẩn (☐) đầu dòng.
+4. Công thức toán học và ký hiệu:
+   - Trình bày rõ ràng, trực quan, dùng định dạng ký hiệu ký tự toán học chuẩn mực (ví dụ: $y'(t) = ay(t) + b$).
+5. Quy cách kỹ thuật đầu ra:
+   - Tuyệt đối KHÔNG trả về mã LaTeX thô hoặc Markdown thuần ('#', '**').
+   - Chỉ trả về cấu trúc mã nguồn HTML hoàn chỉnh chứa các thẻ nội dung (như <div>, <h2>, <h3>, <p>, <ul>, <table>...) để hệ thống nhúng trực tiếp vào khung xem trước và xuất file PDF.
 
 Nội dung văn bản bổ sung hoặc tài liệu: ${input || "Phân tích trực tiếp từ tệp đính kèm"}`;
 
     } else if (type === 'game') {
-        prompt = `Đóng vai một lập trình viên Front-end xuất sắc. Hãy viết một file HTML hoàn chỉnh, độc lập (standalone HTML file bao gồm toàn bộ mã HTML, CSS của Tailwind CDN, thư viện Canvas Confetti và JavaScript bên trong) để tạo ra một trò chơi trắc nghiệm giáo dục giao diện hiện đại phục vụ giảng dạy dựa trên tài liệu đính kèm. Dưới cùng của trò chơi, hãy thêm một dòng chữ nhỏ: 'Thiết kế bởi DETOZ'.
+        let gameTypeDesc = "trò chơi trắc nghiệm kiến thức";
+        if (gameType === 'flashcard') gameTypeDesc = "trò chơi lật thẻ ghi nhớ (Flashcard) tương tác";
+        else if (gameType === 'crossword') gameTypeDesc = "trò chơi giải mã ô chữ (Crossword) trực quan";
+        else if (gameType === 'guessing') gameTypeDesc = "trò chơi đoán từ / từ khóa chuyên môn (Word Guessing)";
 
-Yêu cầu kỹ thuật & Thư viện:
-- Sử dụng Tailwind CSS qua CDN.
-- Sử dụng thư viện Canvas Confetti qua CDN để tạo hiệu ứng pháo hoa.
-- Sử dụng font chữ 'Inter' từ Google Fonts.
-- Viết CSS thuần trong thẻ <style> để tạo animation shake (rung lắc) khi trả lời sai.
+        let styleDesc = "Phong cách đơn giản, tinh tế, tối ưu cho môi trường học tập trang nhã (tông màu trắng, xám slate chuyên nghiệp, không rườm rà).";
+        if (gameStyle === 'colorful') {
+            styleDesc = "Phong cách nhiều màu sắc, sôi động, bắt mắt cho học sinh (sử dụng các hiệu ứng gradient rực rỡ từ Tailwind như bg-gradient-to-r from-purple-500 to-pink-500, màu sắc tươi sáng, hiệu ứng bóng nổi bật, hoạt ảnh sinh động).";
+        } else if (gameStyle === 'chalkboard') {
+            styleDesc = "Phong cách hoài cổ bảng đen lớp học (tông nền tối xanh đậm/slate-900, chữ viết màu trắng hoặc vàng phấn, viền khung phong cách bảng lớp học chuyên nghiệp).";
+        }
 
-Cấu trúc giao diện game gồm 3 phần (ẩn/hiện bằng JavaScript):
-1. Màn hình Bắt đầu: Tiêu đề trò chơi, lời giới thiệu và nút "Bắt đầu ngay".
-2. Màn hình Chơi: 
-   - Nút bật/tắt toàn màn hình (Fullscreen) ở góc phải.
-   - Tiến độ câu hỏi (VD: Câu 1/10) kèm thanh progress bar. Không hiện điểm số khi đang chơi.
-   - Nút "Bỏ qua câu này" để chuyển ngay câu tiếp theo không tính điểm.
-3. Màn hình Kết quả: Thông báo chúc mừng, tổng điểm (VD: 8/10) và nút "Chơi lại từ đầu".
+        prompt = `Đóng vai trò là một lập trình viên Front-end chuyên nghiệp. Hãy viết một file HTML hoàn chỉnh, độc lập (standalone HTML file bao gồm toàn bộ cấu trúc HTML, CSS sử dụng Tailwind CDN, thư viện Canvas Confetti qua CDN, thư viện Google Font 'Inter' và toàn bộ mã nguồn JavaScript tương tác bên trong) để tạo ra một ${gameTypeDesc} phục vụ giảng dạy. 
+Dưới cùng của trò chơi, bắt buộc phải thêm một dòng chữ nhỏ bản quyền: 'Thiết kế bởi DETOZ'.
 
-Logic JavaScript:
-- Mảng câu hỏi Object gồm: { q: "Câu hỏi", a: ["Đáp án 1", "Đáp án 2",...], c: index_đáp_án_đúng }.
-- Trả lời đúng: Nút đổi xanh lá, bắn pháo hoa, tự động chuyển câu sau 1 giây.
-- Trả lời sai: Nút đổi đỏ, rung lắc, tự động chuyển câu sau 1 giây.
+YÊU CẦU KỸ THUẬT & GIAO DIỆN:
+- Phong cách thiết kế giao diện: ${styleDesc}
+- Dữ liệu trò chơi: Hãy tự động phân tích sâu nội dung tài liệu đính kèm bên dưới để trích xuất ra các câu hỏi, thuật ngữ hoặc từ khóa chính xác, chất lượng cao liên quan trực tiếp đến chủ đề bài học.
 
-BẮT BUỘC: Phải trả về toàn bộ mã nguồn HTML hợp lệ từ <!DOCTYPE html> cho đến </html> để người dùng lưu lại thành file .html và mở chạy ngoại tuyến được ngay.
+CẤU TRÚC VÀ LOGIC TƯƠNG TÁC CHI TIẾT:
+- Đối với Trắc nghiệm (Quiz): Gồm 3 màn hình (Bắt đầu, Chơi, Kết quả) ẩn hiện bằng JS. Có nút bật/tắt Fullscreen, thanh progress bar thể hiện tiến độ câu hỏi, không hiện điểm số khi đang chơi, có nút "Bỏ qua câu này". Khi trả lời đúng: nút đổi màu xanh lá, bắn pháo hoa bằng Canvas Confetti, tự động chuyển câu sau 1 giây. Khi trả lời sai: nút đổi màu đỏ, kích hoạt hiệu ứng rung lắc (class shake), tự động chuyển câu sau 1 giây. Lưu trữ điểm ngầm.
+- Đối với Lật thẻ (Flashcard): Giao diện hiển thị các thẻ ghi nhớ (mặt trước là thuật ngữ/câu hỏi, mặt sau là định nghĩa/đáp án chi tiết). Người dùng bấm vào thẻ hoặc nút tương tác để thực hiện hiệu ứng lật thẻ 3D mượt mà, có nút chuyển qua thẻ tiếp theo/quay lại, hiển thị tổng số thẻ.
+- Đối với Ô chữ / Đoán từ (Crossword / Guessing): Giao diện bảng ô chữ hoặc ô nhập ký tự đoán từ dựa trên gợi ý (clue) lấy từ tài liệu, có cơ chế kiểm tra đáp án đúng/sai từng từ, tính điểm hoặc báo hoàn thành.
 
-Nội dung tài liệu đính kèm để tạo 10 câu hỏi trắc nghiệm: ${input || "Không có"}`;
+BẮT BUỘC: Phải trả về toàn bộ mã nguồn HTML hợp lệ từ <!DOCTYPE html> cho đến </html> chứa đầy đủ mọi thành phần để người dùng lưu thành file .html độc lập và mở chạy ngoại tuyến ngay lập tức trên mọi trình duyệt.
+
+Nội dung tài liệu đính kèm để phân tích và tạo dữ liệu trò chơi: ${input || "Không có văn bản nhập tay, hãy phân tích trực tiếp file đính kèm"}`;
     }
 
     const parts = [{ text: prompt }];
@@ -65,7 +78,6 @@ Nội dung tài liệu đính kèm để tạo 10 câu hỏi trắc nghiệm: ${
 
     let textResult = "";
 
-    // Cơ chế ưu tiên Pro, tự động chuyển sang 3.6 Flash nếu quá tải/hết token
     try {
         const proModel = genAI.getGenerativeModel({ model: 'gemini-3.1-pro-preview' });
         const result = await proModel.generateContent(parts);
