@@ -15,13 +15,16 @@ export default async function handler(req, res) {
     let prompt = '';
 
     if (type === 'latex') {
-        prompt = `Đóng vai là một chuyên gia thiết kế tài liệu sư phạm cao cấp. Hãy phân tích tài liệu/tệp tin đính kèm dưới đây và biên soạn thành một văn bản học thuật hoàn chỉnh trình bày dưới dạng HTML (sử dụng CSS nội tuyến hoặc các lớp Tailwind cơ bản). 
-Yêu cầu trình bày:
-- Phong cách giống như một đề thi, tài liệu hướng dẫn kỹ thuật hoặc giáo án chuyên nghiệp (font chữ sắc nét, tiêu đề in đậm trang nhã, bố cục phân cấp rõ ràng).
-- Hỗ trợ ký hiệu toán học, công thức rõ ràng, bảng biểu kẻ khung gọn gàng, danh sách kiểm tra (checkbox $\\square$) đầy đủ.
-- Chỉ trả về phần mã HTML nội dung (bắt đầu bằng các thẻ div, h1, p, table...) để hệ thống nhúng trực tiếp vào khung xem trước và xuất ra PDF.
+        prompt = `Đóng vai là một chuyên gia thiết kế tài liệu học thuật và giáo án cao cấp. Hãy phân tích tài liệu/tệp tin đính kèm dưới đây và biên soạn thành một báo cáo/hướng dẫn học thuật hoàn chỉnh trình bày dưới dạng mã HTML sạch sẽ.
 
-Nội dung văn bản bổ sung (nếu có): ${input || "Không có"}`;
+Yêu cầu định dạng và phong cách trình bày (giống hệt các tài liệu hướng dẫn kỹ thuật chuyên nghiệp, dễ nhìn, tối ưu cho in ấn):
+- Bố cục gồm: Tiêu đề lớn in đậm, phần thông tin Meta (Phiên bản, Ngày cập nhật, Mục tiêu tài liệu), các phần nội dung đánh số rõ ràng (1, 1.1, 2, ...).
+- Bảng biểu (Table): Phải sử dụng thẻ HTML <table>, <tr>, <th>, <td> với đường viền gọn gàng, padding thoáng đãng để trình bày các danh mục, thông số hoặc bảng điểm.
+- Danh sách & Checklist: Sử dụng các gạch đầu dòng rõ ràng hoặc ký hiệu ô vuông (☐) cho các phần danh sách cần kiểm tra.
+- Công thức toán học (nếu có): Trình bày rõ ràng, dễ đọc.
+- Tuyệt đối không trả về mã LaTeX thô hay Markdown thuần. Hãy trả về toàn bộ cấu trúc các thẻ HTML nội dung (như <div>, <h2>, <h3>, <p>, <ul>, <table>...) để hệ thống hiển thị trực quan và xuất file PDF chuẩn xác.
+
+Nội dung văn bản bổ sung hoặc tài liệu: ${input || "Phân tích trực tiếp từ tệp đính kèm"}`;
 
     } else if (type === 'game') {
         prompt = `Đóng vai một lập trình viên Front-end xuất sắc. Hãy viết một file HTML hoàn chỉnh, độc lập (standalone HTML file bao gồm toàn bộ mã HTML, CSS của Tailwind CDN, thư viện Canvas Confetti và JavaScript bên trong) để tạo ra một trò chơi trắc nghiệm giáo dục giao diện hiện đại phục vụ giảng dạy dựa trên tài liệu đính kèm. Dưới cùng của trò chơi, hãy thêm một dòng chữ nhỏ: 'Thiết kế bởi DETOZ'.
